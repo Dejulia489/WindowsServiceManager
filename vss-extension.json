@@ -1,0 +1,33 @@
+{
+    "manifestVersion": 1,
+    "id": "WindowsServiceManager",
+    "version": "1.0.0",
+    "name": "Windows Service Manager",
+    "description": "A VSTS Release Task that installs a Windows Service",
+    "publisher": "MDSolutions",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "icons": {
+        "default": "icon.png"
+    },
+    "contributions": [
+        {
+            "id": "WindowsServiceManager",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "WindowsServiceManager"
+            }
+        }
+    ],
+    "files": [
+        {
+            "path": "WindowsServiceManager"
+        }
+    ]
+}
