@@ -14,7 +14,7 @@
         "default": "icon.png"
     },
     "categories": [
-        "Pipelines"
+        "Build and release"
     ],
     "contributions": [
         {
