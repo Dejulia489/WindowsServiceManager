@@ -13,6 +13,9 @@
     "icons": {
         "default": "icon.png"
     },
+    "categories": [
+        "Pipelines"
+    ],
     "contributions": [
         {
             "id": "WindowsServiceManager",
