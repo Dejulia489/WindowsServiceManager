@@ -28,18 +28,18 @@
         {
             "name": "ServiceName",
             "type": "string",
-            "label": "myService",
+            "label": "Service Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "The name of the windows service installed on the machine"
+            "helpMarkDown": "The name of the windows service installed on the deploment group target."
         },
         {
-            "name": "PackagePath",
+            "name": "ArtifactPath",
             "type": "filePath",
-            "label": "PackagePath",
+            "label": "Artifact Path",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "The path to the service artifact"
+            "helpMarkDown": "The path to the windows service artifact."
         },
         {
             "name": "CleanInstall",
@@ -48,7 +48,6 @@
             "defaultValue": "false",
             "required": false,
             "helpMarkDown": "If this is true, this will remove all the files in the partent directory of this .exe prior to copying the package.",
-            "groupName": "advanced"
         }
     ],
     "execution": {
