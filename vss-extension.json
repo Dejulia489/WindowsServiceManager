@@ -6,6 +6,9 @@
     "description": "A Release task that installs a Windows Service",
     "publisher": "MDSolutions",
     "repository":"https://github.com/Dejulia489/WindowsServiceManager",
+    "Links":{
+        "Support":"https://github.com/Dejulia489/WindowsServiceManager"
+    },
     "content":[
         "Overview.md"
     ],
