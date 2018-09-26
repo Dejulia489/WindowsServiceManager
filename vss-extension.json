@@ -5,14 +5,17 @@
     "name": "Windows Service Manager",
     "description": "A Release task that installs a Windows Service",
     "publisher": "MDSolutions",
-    "repository":"https://github.com/Dejulia489/WindowsServiceManager",
-    "Links":{
-        "Support":"https://github.com/Dejulia489/WindowsServiceManager"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Dejulia489/WindowsServiceManager"
     },
-    "content":[
+    "Links": {
+        "Support": "https://github.com/Dejulia489/WindowsServiceManager"
+    },
+    "content": [
         "WindowsServiceManager\\overview.md"
     ],
-    "tags":[
+    "tags": [
         "Release Management",
         "Azure DevOps Pipelines",
         "Windows Service",
