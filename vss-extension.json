@@ -15,8 +15,9 @@
     "tags":[
         "Release Management",
         "Azure DevOps Pipelines",
-        "Windows",
-        "Service"
+        "Windows Service",
+        "VSTS",
+        "Visual Studio Team Services"
     ],
     "license": "MIT",
     "targets": [
