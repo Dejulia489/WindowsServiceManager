@@ -26,6 +26,3 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 #### Optional Fields
 
 1. **Clean Install** - Will remove all files inside the parent direcotry of the .exe file prior to copying the Artifact.
-
-
-## [Check out this extension on the Marketplace.](https://marketplace.visualstudio.com/items?itemName=MDSolutions.WindowsServiceManagerWindowsServiceManager) ##
