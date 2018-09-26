@@ -3,7 +3,7 @@
     "id": "7dad075d-a817-45ac-baab-4c1376d2885e",
     "name": "WindowsServiceManager",
     "friendlyName": "Windows Service Manager",
-    "description": "Release task for installing a windows service",
+    "description": "Installs a Windows Service with the use of a Deployment Group Target.",
     "helpMarkDown": "",
     "category": "Utility",
     "visibility": [

@@ -3,9 +3,15 @@
     "id": "WindowsServiceManager",
     "version": "1.0.0",
     "name": "Windows Service Manager",
-    "description": "A VSTS Release Task that installs a Windows Service",
+    "description": "A Release task that installs a Windows Service",
     "publisher": "MDSolutions",
     "repository":"https://github.com/Dejulia489/WindowsServiceManager",
+    "tags":[
+        "Release Management",
+        "Azure DevOps Pipelines",
+        "Windows",
+        "Service"
+    ],
     "license": "MIT",
     "targets": [
         {
@@ -13,7 +19,7 @@
         }
     ],
     "icons": {
-        "default": "icon.png"
+        "default": "Images\\icon.png"
     },
     "categories": [
         "Build and release"
