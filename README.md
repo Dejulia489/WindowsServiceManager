@@ -2,7 +2,7 @@
 
 ## Tasks Included
 
-Windows Service Manager - Publish a windows service with a deployment group target.
+Windows Service Manager - Deploys a windows service installed on a deployment group target.
 
 1. Locates the service by the **Service Name**
 2. Stops the service
