@@ -9,9 +9,14 @@
         "type": "git",
         "url": "https://github.com/Dejulia489/WindowsServiceManager"
     },
-    "Links": {
-        "Support": "https://github.com/Dejulia489/WindowsServiceManager"
+    "links": {
+        "support": "https://github.com/Dejulia489/WindowsServiceManager"
     },
+    "screenshots": [
+        {
+            "path": "Images\\TaskOptions.png"
+        }
+    ],
     "content": {
         "details": {
             "path": "WindowsServiceManager\\overview.md"
