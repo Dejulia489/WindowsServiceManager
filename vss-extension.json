@@ -5,6 +5,8 @@
     "name": "Windows Service Manager",
     "description": "A VSTS Release Task that installs a Windows Service",
     "publisher": "MDSolutions",
+    "repository":"https://github.com/Dejulia489/WindowsServiceManager",
+    "license": "MIT",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
