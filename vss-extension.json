@@ -12,9 +12,11 @@
     "Links": {
         "Support": "https://github.com/Dejulia489/WindowsServiceManager"
     },
-    "content": [
-        "WindowsServiceManager\\overview.md"
-    ],
+    "content": {
+        "details": {
+            "path": "WindowsServiceManager\\overview.md"
+        }
+    },
     "tags": [
         "Release Management",
         "Azure DevOps Pipelines",
