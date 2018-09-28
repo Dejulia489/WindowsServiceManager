@@ -31,7 +31,7 @@
             "label": "Service Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "The name of the windows service installed on the deploment group target."
+            "helpMarkDown": "The name of the windows service installed on the deployment group target."
         },
         {
             "name": "ArtifactPath",
@@ -47,18 +47,16 @@
             "label": "CleanInstall",
             "defaultValue": "false",
             "required": false,
-            "helpMarkDown": "If this is true, this will remove all the files in the partent directory of this .exe prior to copying the package.",
+            "helpMarkDown": "If this is true, this will remove all the files in the parent directory of this .exe prior to copying the package."
         }
     ],
     "execution": {
-        "execution": {
-            "PowerShell3": {
-                "target": "InstallWindowsService.ps1",
-                "platforms": [
-                    "windows"
-                ],
-                "workingDirectory": "$(currentDirectory)"
-            }
+        "PowerShell3": {
+            "target": "InstallWindowsService.ps1",
+            "platforms": [
+                "windows"
+            ],
+            "workingDirectory": "$(currentDirectory)"
         }
     }
 }
