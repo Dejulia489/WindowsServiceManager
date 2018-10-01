@@ -10,7 +10,7 @@ param
 
     [Parameter()]
     [string]
-    $CleanInstall
+    $CleanInstall = $true
 )
 
 Write-Output "Getting [$ServiceName]"

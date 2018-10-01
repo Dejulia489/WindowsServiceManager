@@ -11,9 +11,9 @@
     ],
     "author": "Dejulia489",
     "version": {
-        "Major": 1,
-        "Minor": 1,
-        "Patch": 25
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 0
     },
     "instanceNameFormat": "Install Windows Service",
     "groups": [
@@ -39,14 +39,6 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "The path to the windows service artifact."
-        },
-        {
-            "name": "CleanInstall",
-            "type": "boolean",
-            "label": "CleanInstall",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "If this is true, this will remove all the files in the partent directory of this .exe prior to copying the package."
         }
     ],
     "execution": {
