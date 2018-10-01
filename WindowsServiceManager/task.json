@@ -50,7 +50,7 @@
         }
     ],
     "execution": {
-        "PowerShell": {
+        "PowerShell3": {
             "target": "InstallWindowsService.ps1",
             "workingDirectory": "$(currentDirectory)"
         }
