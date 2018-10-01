@@ -46,7 +46,7 @@
             "label": "CleanInstall",
             "defaultValue": "false",
             "required": false,
-            "helpMarkDown": "If this is true, this will remove all the files in the partent directory of this .exe prior to copying the package.",
+            "helpMarkDown": "If this is true, this will remove all the files in the partent directory of this .exe prior to copying the package."
         }
     ],
     "execution": {
