@@ -1,4 +1,3 @@
-
 {
     "id": "7dad075d-a817-45ac-baab-4c1376d2885e",
     "name": "WindowsServiceManager",
@@ -51,14 +50,9 @@
         }
     ],
     "execution": {
-        "execution": {
-            "PowerShell3": {
-                "target": "InstallWindowsService.ps1",
-                "platforms": [
-                    "windows"
-                ],
-                "workingDirectory": "$(currentDirectory)"
-            }
+        "PowerShell": {
+            "target": "InstallWindowsService.ps1",
+            "workingDirectory": "$(currentDirectory)"
         }
     }
 }
