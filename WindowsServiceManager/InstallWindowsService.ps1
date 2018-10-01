@@ -9,9 +9,10 @@ param
     $PackagePath,
 
     [Parameter()]
-    [bool]
+    [string]
     $CleanInstall
 )
+
 Write-Output "Getting [$ServiceName]"
 $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
 If ($serviceObject.State -eq 'Running')
