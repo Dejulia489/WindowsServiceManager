@@ -42,7 +42,7 @@
         },
         {
             "name": "CleanInstall",
-            "type": "bool",
+            "type": "boolean",
             "label": "Clean Install",
             "defaultValue": false,
             "required": true,
