@@ -6,12 +6,13 @@ param
 
     [Parameter()]
     [string]
-    $PackagePath = (Get-VstsInput -Name 'PackagePath' -Require),
+    $ArtifactPath = (Get-VstsInput -Name 'ArtifactPath' -Require),
 
     [Parameter()]
     [string]
     $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool)
 )
+Trace-VstsEnteringInvocation $MyInvocation
 
 Write-Output "Getting [$ServiceName]"
 $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
@@ -37,11 +38,12 @@ Else
 {
     $null = New-Item -ItemType Directory -Path $parentPath -Force
 }
-Write-Output "Copying [$PackagePath] to [$parentPath]"
-Copy-Item -Path $PackagePath\* -Destination $parentPath -Force -Recurse
+Write-Output "Copying [$ArtifactPath] to [$parentPath]"
+Copy-Item -Path $ArtifactPath\* -Destination $parentPath -Force -Recurse
 Write-Output "Starting [$ServiceName]"
 $respone = $serviceObject.StartService()
 If ($respone.ReturnValue -ne 0)
 {
     Write-Error "Service responded with [$($respone.ReturnValue)], expected 0" -ErrorAction Stop
 }
+Trace-VstsLeavingInvocation $MyInvocation
