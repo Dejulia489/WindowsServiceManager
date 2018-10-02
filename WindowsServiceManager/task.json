@@ -39,6 +39,14 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "The path to the windows service artifact."
+        },
+        {
+            "name": "CleanInstall",
+            "type": "bool",
+            "label": "Clean Install",
+            "defaultValue": false,
+            "required": true,
+            "helpMarkDown": "Deletes all files from the Windows Service parent directory prior to deployment of the artifact."
         }
     ],
     "execution": {

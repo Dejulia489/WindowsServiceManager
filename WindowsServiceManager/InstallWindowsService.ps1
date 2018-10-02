@@ -2,15 +2,15 @@ param
 (
     [Parameter(Mandatory)]
     [string]
-    $ServiceName, 
+    $ServiceName = (Get-VstsInput -Name 'ServiceName' -Require), 
 
     [Parameter(Mandatory)]
     [string]
-    $PackagePath,
+    $PackagePath = (Get-VstsInput -Name 'PackagePath' -Require),
 
     [Parameter()]
     [string]
-    $CleanInstall = $true
+    $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool)
 )
 
 Write-Output "Getting [$ServiceName]"
