@@ -1,10 +1,10 @@
 param
 (
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]
     $ServiceName = (Get-VstsInput -Name 'ServiceName' -Require), 
 
-    [Parameter(Mandatory)]
+    [Parameter()]
     [string]
     $PackagePath = (Get-VstsInput -Name 'PackagePath' -Require),
 
