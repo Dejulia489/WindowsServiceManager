@@ -9,7 +9,7 @@ param
     $ArtifactPath = (Get-VstsInput -Name 'ArtifactPath' -Require),
 
     [Parameter()]
-    [string]
+    [bool]
     $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool)
 )
 Trace-VstsEnteringInvocation $MyInvocation
@@ -24,7 +24,7 @@ If ($serviceObject)
         $respone = $serviceObject.StopService()
         If ($respone.ReturnValue -ne 0)
         {
-            Write-Error "Service responded with [$($respone.ReturnValue)], expected 0" -ErrorAction Stop
+            Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/api/winsvc/ns-winsvc-_service_status for details." -ErrorAction Stop
         }
     }
     $parentPath = $serviceObject.PathName | Split-Path -Parent
@@ -48,7 +48,7 @@ If ($serviceObject)
     $respone = $serviceObject.StartService()
     If ($respone.ReturnValue -ne 0)
     {
-        Write-Error "Service responded with [$($respone.ReturnValue)], expected 0" -ErrorAction Stop
+        Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/api/winsvc/ns-winsvc-_service_status for details." -ErrorAction Stop
     }
 }
 else
