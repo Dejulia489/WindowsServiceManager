@@ -15,7 +15,7 @@
         "Minor": 0,
         "Patch": 0
     },
-    "instanceNameFormat": "Install Windows Service",
+    "instanceNameFormat": "Deploy Windows Service",
     "groups": [
         {
             "name": "advanced",

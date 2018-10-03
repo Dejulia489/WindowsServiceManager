@@ -33,7 +33,7 @@ If ($serviceObject)
     {
         If ($CleanInstall)
         {
-            Write-Output "[$($MyInvocation.MyCommand.Name)]: Clean install requested, removing [$parentPath]"
+            Write-Output "[$($MyInvocation.MyCommand.Name)]: Clean install set to [$CleanInstall], removing [$parentPath]"
             Remove-Item -Path $parentPath -Force -Recurse
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
