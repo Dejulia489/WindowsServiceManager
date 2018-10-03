@@ -30,7 +30,7 @@
             "label": "Service Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "The name of the windows service installed on the deploment group target."
+            "helpMarkDown": "The name of the windows service installed on the deployment group target."
         },
         {
             "name": "ArtifactPath",
