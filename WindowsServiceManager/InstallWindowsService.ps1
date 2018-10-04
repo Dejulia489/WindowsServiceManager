@@ -9,7 +9,6 @@ param
     $ArtifactPath = (Get-VstsInput -Name 'ArtifactPath' -Require),
 
     [Parameter()]
-    [bool]
     $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool)
 )
 Trace-VstsEnteringInvocation $MyInvocation
