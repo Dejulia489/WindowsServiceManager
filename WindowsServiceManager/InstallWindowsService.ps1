@@ -9,7 +9,10 @@ param
     $ArtifactPath = (Get-VstsInput -Name 'ArtifactPath' -Require),
 
     [Parameter()]
-    $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool)
+    $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool),
+
+    [Parameter()]
+    $KillProcess = (Get-VstsInput -Name 'KillProcess' -AsBool)
 )
 Trace-VstsEnteringInvocation $MyInvocation
 
@@ -47,12 +50,15 @@ If ($serviceObject)
                     {
                         '*Cannot remove*'
                         {
-                            $allProcesses = Get-Process
-                            $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
-                            If ($process)
+                            If($KillProcess)
                             {
-                                Write-Warning "[$($MyInvocation.MyCommand.Name)]: Files are still in use by [$($process.ProcessName)], killing the process!"
-                                $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                                $allProcesses = Get-Process
+                                $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
+                                If ($process)
+                                {
+                                    Write-Output "[$($MyInvocation.MyCommand.Name)]: Kill process set to [$KillProcess], killing [$($process.ProcessName)]!"
+                                    $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                                }
                             }
                         }
                         Default

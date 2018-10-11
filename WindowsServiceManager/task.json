@@ -20,7 +20,7 @@
         {
             "name": "advanced",
             "displayName": "Advanced",
-            "isExpanded": false
+            "isExpanded": true
         }
     ],
     "inputs": [
@@ -46,7 +46,17 @@
             "label": "Clean Install",
             "defaultValue": false,
             "required": true,
+            "groupName": "advanced",
             "helpMarkDown": "Deletes all files from the Windows Service parent directory prior to deployment of the artifact."
+        },
+        {
+            "name": "KillProcess",
+            "type": "boolean",
+            "label": "Kill Process",
+            "defaultValue": false,
+            "required": true,
+            "groupName": "advanced",
+            "helpMarkDown": "Forces the process offline if the clean install is enabled."
         }
     ],
     "execution": {
