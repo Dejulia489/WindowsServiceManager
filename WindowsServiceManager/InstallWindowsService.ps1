@@ -23,7 +23,7 @@ If ($serviceObject)
         $respone = $serviceObject.StopService()
         If ($respone.ReturnValue -ne 0)
         {
-            Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/api/winsvc/ns-winsvc-_service_status for details." -ErrorAction Stop
+            Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/stopservice-method-in-class-win32-service for details." -ErrorAction Stop
         }
     }
     $parentPath = $serviceObject.PathName | Split-Path -Parent
@@ -33,7 +33,40 @@ If ($serviceObject)
         If ($CleanInstall)
         {
             Write-Output "[$($MyInvocation.MyCommand.Name)]: Clean install set to [$CleanInstall], removing [$parentPath]"
-            Remove-Item -Path $parentPath -Force -Recurse
+            $TIMEOUT = '60'
+            $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
+            Do
+            {
+                Try
+                {
+                    Remove-Item -Path $parentPath -Force -Recurse -ErrorAction Stop
+                }
+                Catch
+                {
+                    Switch -Wildcard ($PSItem.ErrorDetails.Message)
+                    {
+                        '*Cannot remove*'
+                        {
+                            $allProcesses = Get-Process
+                            $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
+                            If ($process)
+                            {
+                                Write-Warning "[$($MyInvocation.MyCommand.Name)]: Files are still in use by [$($process.ProcessName)], killing the process!"
+                                $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                            }
+                        }
+                        Default
+                        {
+                            Write-Error $PSItem -ErrorAction Stop
+                        }
+                    }
+                }
+                If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $TIMEOUT)
+                {
+                    Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within the timeout limit, clean install has failed." -ErrorAction Stop
+                }
+            }
+            While (Test-Path $parentPath)
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
     }
@@ -47,7 +80,7 @@ If ($serviceObject)
     $respone = $serviceObject.StartService()
     If ($respone.ReturnValue -ne 0)
     {
-        Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/api/winsvc/ns-winsvc-_service_status for details." -ErrorAction Stop
+        Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details." -ErrorAction Stop
     }
 }
 else
