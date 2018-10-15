@@ -46,7 +46,7 @@
             "label": "Timeout",
             "defaultValue": "30",
             "required": true,
-            "helpMarkDown": "The time in seconds to wait for the service to stop."
+            "helpMarkDown": "The number of seconds to wait for the service to stop."
         },
         {
             "name": "StopProcess",
@@ -54,7 +54,7 @@
             "label": "Stop Process",
             "defaultValue": false,
             "groupName": "advanced",
-            "helpMarkDown": "Stops the process if it does not respond within the timeout limit."
+            "helpMarkDown": "Stops the process if the service does not respond within the timeout limit."
         },
         {
             "name": "CleanInstall",
