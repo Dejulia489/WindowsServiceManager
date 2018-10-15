@@ -41,22 +41,28 @@
             "helpMarkDown": "The path to the windows service artifact."
         },
         {
+            "name": "TimeOut",
+            "type": "string",
+            "label": "Timeout",
+            "defaultValue": "30",
+            "required": true,
+            "helpMarkDown": "The time in seconds to wait for the service to stop."
+        },
+        {
+            "name": "StopProcess",
+            "type": "boolean",
+            "label": "Stop Process",
+            "defaultValue": false,
+            "groupName": "advanced",
+            "helpMarkDown": "Stops the process if it does not respond within the timeout limit."
+        },
+        {
             "name": "CleanInstall",
             "type": "boolean",
             "label": "Clean Install",
             "defaultValue": false,
-            "required": true,
             "groupName": "advanced",
             "helpMarkDown": "Deletes all files from the Windows Service parent directory prior to deployment of the artifact."
-        },
-        {
-            "name": "KillProcess",
-            "type": "boolean",
-            "label": "Kill Process",
-            "defaultValue": false,
-            "required": true,
-            "groupName": "advanced",
-            "helpMarkDown": "Forces the process offline if the clean install is enabled."
         }
     ],
     "execution": {
