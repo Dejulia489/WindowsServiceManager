@@ -36,18 +36,18 @@ If ($serviceObject)
             {
                 If ($StopProcess)
                 {
-                    Write-Verbose "[$ServiceName] did not respond within the timeout limit, stopping process."
+                    Write-Verbose "[$ServiceName] did not respond within [$TimeOut] seconds, stopping process."
                     $allProcesses = Get-Process
                     $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"}
                     If ($process)
                     {
-                        Write-Output "Killing [$($process.ProcessName)]!"
+                        Write-Warning "[$($MyInvocation.MyCommand.Name)]: Files are still in use by [$($process.ProcessName)], stopping the process!"
                         $process | Stop-Process -Force -ErrorAction SilentlyContinue
                     }
                 }
                 Else
                 {
-                    Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within the timeout limit." -ErrorAction Stop                    
+                    Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within [$TimeOut] seconds." -ErrorAction Stop                    
                 }
             }
             $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
@@ -61,7 +61,6 @@ If ($serviceObject)
         If ($CleanInstall)
         {
             Write-Output "[$($MyInvocation.MyCommand.Name)]: Clean install set to [$CleanInstall], removing [$parentPath]"
-            $TIMEOUT = '60'
             $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
             Do
             {
@@ -77,6 +76,7 @@ If ($serviceObject)
                         {
                             If ($StopProcess)
                             {
+                                Write-Verbose "[$ServiceName] did not respond within [$TimeOut] seconds, stopping process." 
                                 $allProcesses = Get-Process
                                 $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
                                 If ($process)
@@ -97,9 +97,9 @@ If ($serviceObject)
                         }
                     }
                 }
-                If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $TIMEOUT)
+                If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $TimeOut)
                 {
-                    Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within the timeout limit, clean install has failed." -ErrorAction Stop
+                    Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within [$TimeOut] seconds, clean install has failed." -ErrorAction Stop
                 }
             }
             While (Test-Path $parentPath)
