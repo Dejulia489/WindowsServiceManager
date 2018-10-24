@@ -16,7 +16,7 @@ param
     $CleanInstall = (Get-VstsInput -Name 'CleanInstall' -AsBool),
 
     [Parameter()]
-    $KillProcess = (Get-VstsInput -Name 'StopProcess' -AsBool)
+    $StopProcess = (Get-VstsInput -Name 'StopProcess' -AsBool)
 )
 Trace-VstsEnteringInvocation $MyInvocation
 
@@ -34,7 +34,7 @@ If ($serviceObject)
             $results = $serviceObject.StopService()
             If ($stopServiceTimer.Elapsed.TotalSeconds -gt $TimeOut)
             {
-                If ($KillProcess)
+                If ($StopProcess)
                 {
                     Write-Verbose "[$ServiceName] did not respond within the timeout limit, stopping process."
                     $allProcesses = Get-Process
@@ -61,7 +61,48 @@ If ($serviceObject)
         If ($CleanInstall)
         {
             Write-Output "[$($MyInvocation.MyCommand.Name)]: Clean install set to [$CleanInstall], removing [$parentPath]"
-            Remove-Item -Path $parentPath -Force -Recurse
+            $TIMEOUT = '60'
+            $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
+            Do
+            {
+                Try
+                {
+                    Remove-Item -Path $parentPath -Force -Recurse -ErrorAction Stop
+                }
+                Catch
+                {
+                    Switch -Wildcard ($PSItem.ErrorDetails.Message)
+                    {
+                        '*Cannot remove*'
+                        {
+                            If ($StopProcess)
+                            {
+                                $allProcesses = Get-Process
+                                $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
+                                If ($process)
+                                {
+                                    Write-Warning "[$($MyInvocation.MyCommand.Name)]: Files are still in use by [$($process.ProcessName)], stopping the process!"
+                                    $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                                }
+                            }
+                            else
+                            {
+                                Write-Error $PSItem -ErrorAction Stop
+                            }
+    
+                        }
+                        Default
+                        {
+                            Write-Error $PSItem -ErrorAction Stop
+                        }
+                    }
+                }
+                If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $TIMEOUT)
+                {
+                    Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within the timeout limit, clean install has failed." -ErrorAction Stop
+                }
+            }
+            While (Test-Path $parentPath)
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
     }
