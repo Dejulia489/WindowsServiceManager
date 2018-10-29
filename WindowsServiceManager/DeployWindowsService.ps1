@@ -39,7 +39,7 @@ $scriptBlock = {
     $CleanInstall = $args[3]
     $ArtifactPath = $args[4]
     Write-Output "Getting [$ServiceName]"
-    $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
+    $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
     If ($serviceObject)
     {  
         If ($serviceObject.State -eq 'Running')
@@ -48,7 +48,7 @@ $scriptBlock = {
             Write-Output "Stopping [$ServiceName]"
             Do
             {
-                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
+                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
                 $results = $serviceObject.StopService()
                 If ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout)
                 {
@@ -68,7 +68,7 @@ $scriptBlock = {
                         Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
                     }
                 }
-                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
+                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
             }
             While ($serviceObject.State -ne 'Stopped')
         }
@@ -129,7 +129,7 @@ $scriptBlock = {
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
         Write-Output "Copying [$ArtifactPath] to [$parentPath]"
-        Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse
+        Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
         Write-Output "Starting [$ServiceName]"
         $respone = $serviceObject.StartService()
         If ($respone.ReturnValue -ne 0)
