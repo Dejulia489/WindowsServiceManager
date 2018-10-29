@@ -59,13 +59,13 @@ $scriptBlock = {
                         $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"}
                         If ($process)
                         {
-                            Write-Warning "[$($MyInvocation.MyCommand.Name)]: Files are still in use by [$($process.ProcessName)], stopping the process!"
+                            Write-Warning "Files are still in use by [$($process.ProcessName)], stopping the process!"
                             $process | Stop-Process -Force -ErrorAction SilentlyContinue
                         }
                     }
                     Else
                     {
-                        Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
+                        Write-Error "[$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
                     }
                 }
                 $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
@@ -73,12 +73,12 @@ $scriptBlock = {
             While ($serviceObject.State -ne 'Stopped')
         }
         $parentPath = ($serviceObject.PathName | Split-Path -Parent).Replace('"', '')
-        Write-Output "Identified deployment location [$parentPath]"
+        Write-Output "Identified [$ServiceName] install location [$parentPath]"
         If (Test-Path $parentPath)
         {
             If ($CleanInstall)
             {
-                Write-Output "[$($MyInvocation.MyCommand.Name)]: Clean install set to [$CleanInstall], removing [$parentPath]"
+                Write-Output "Clean install set to [$CleanInstall], removing [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
                 Do
                 {
@@ -99,7 +99,7 @@ $scriptBlock = {
                                     $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
                                     If ($process)
                                     {
-                                        Write-Warning "[$($MyInvocation.MyCommand.Name)]: Files are still in use by [$($process.ProcessName)], stopping the process!"
+                                        Write-Warning "Files are still in use by [$($process.ProcessName)], stopping the process!"
                                         $process | Stop-Process -Force -ErrorAction SilentlyContinue
                                     }
                                 }
@@ -117,7 +117,7 @@ $scriptBlock = {
                     }
                     If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $Timeout)
                     {
-                        Write-Error "[$($MyInvocation.MyCommand.Name)]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
+                        Write-Error "[$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
                     }
                 }
                 While (Test-Path $parentPath)
