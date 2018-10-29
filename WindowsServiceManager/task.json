@@ -2,7 +2,7 @@
     "id": "7dad075d-a817-45ac-baab-4c1376d2885e",
     "name": "WindowsServiceManager",
     "friendlyName": "Windows Service Manager",
-    "description": "Deploys a Windows Service with the use of a Deployment Group Target.",
+    "description": "Deploys a Windows Service with an Agent or a Deployment Group Target.",
     "helpMarkDown": "",
     "category": "Utility",
     "visibility": [
@@ -24,6 +24,39 @@
         }
     ],
     "inputs": [
+        {
+            "name": "DeploymentType",
+            "type": "radio",
+            "label": "Deployment Type",
+            "required": true,
+            "defaultValue": "Agent",
+            "helpMarkDown": "Deploy with an Agent or a Deployment Group.",
+            "options": {
+                "Agent": "Agent",
+                "DeploymentGroup": "Deployment Group"
+            }
+        },
+        {
+            "name": "Machines",
+            "label": "Machines",
+            "required": true,
+            "helpMarkDown": "Provide a comma separated list of machine IP addresses or FQDNs. Or provide output variable of other tasks. Eg: $(variableName).",
+            "visibleRule": "DeploymentType=Agent"
+        },
+        {
+            "name": "AdminLogin",
+            "label": "Admin Login",
+            "required": true,
+            "helpMarkDown": "Administrator login for the target machines.",
+            "visibleRule": "DeploymentType=Agent"
+        },
+        {
+            "name": "Password",
+            "label": "Password",
+            "required": true,
+            "helpMarkDown": "Password for administrator login for the target machines. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.",
+            "visibleRule": "DeploymentType=Agent"
+        },
         {
             "name": "ServiceName",
             "type": "string",
@@ -67,7 +100,7 @@
     ],
     "execution": {
         "PowerShell3": {
-            "target": "InstallWindowsService.ps1",
+            "target": "DeployWindowsService.ps1",
             "workingDirectory": "$(currentDirectory)"
         }
     }

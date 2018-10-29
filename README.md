@@ -2,7 +2,7 @@
 
 ## Tasks Included
 
-Windows Service Manager - Deploys a windows service installed on a deployment group target.
+Windows Service Manager - Deploys a windows service installed a target machine or a deployment group target.
 
 1. Locates the service by the **Service Name**
 2. Stops the service
@@ -21,9 +21,16 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 #### Required Fields
 
-1. **Service Name** - The name of the Windows Service installed on the Deployment Group Target.
-2. **Artifact Path** - The path to the Artifact that contains the Windows Service binaries.
-3. **Timeout** - The number of seconds to wait for the service to stop.
+1. **Deployment Type** - Deploying with either an Agent or a Deployment Group Target.
+2. **Service Name** - The name of the Windows Service installed on the Deployment Group Target.
+3. **Artifact Path** - The path to the Artifact that contains the Windows Service binaries.
+4. **Timeout** - The number of seconds to wait for the service to stop.
+
+#### Required Fields with Agent Deployment Type
+
+1. **Machines** - Provide a comma separated list of machine IP addresses or FQDNs. Or provide output variable of other tasks. Eg: $(variableName).
+2. **Admin Login** - Administrator login for the target machines.
+3. **Password** - Password for administrator login for the target machines. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.
 
 #### Advanced Fields
 
