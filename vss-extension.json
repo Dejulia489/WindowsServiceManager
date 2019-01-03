@@ -14,7 +14,10 @@
     },
     "screenshots": [
         {
-            "path": "Images\\TaskOptions.png"
+            "path": "Images\\TaskOptionsDeploymentGroup.png"
+        },
+        {
+            "path": "Images\\TaskOptionsAgent.png"
         }
     ],
     "content": {

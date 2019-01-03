@@ -2,7 +2,7 @@
 
 ## Tasks Included
 
-Windows Service Manager - Deploys a windows service installed a target machine or a deployment group target.
+Windows Service Manager - Deploys a windows service installed on a target machine or a deployment group target.
 
 1. Locates the service by the **Service Name**
 2. Stops the service
@@ -15,9 +15,13 @@ Windows Service Manager - Deploys a windows service installed a target machine o
 After installing the Azure DevOps Pipelines extension from the link below, open a release and add the 'Windows Service Manager' task.
 [Windows Service Manager](https://marketplace.visualstudio.com/items?itemName=MDSolutions.WindowsServiceManagerWindowsServiceManager)
 
-### Task Options
+### Task Options for Agent
 
-![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptions.png?raw=true "Task Options")
+![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsAgent.png?raw=true "Task Options Agent")
+
+### Task Options for Deployment Group
+
+![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsDeploymentGroup.png?raw=true "Task Options Deployment Group")
 
 #### Required Fields
 
@@ -35,4 +39,4 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 #### Advanced Fields
 
 1. **Stop Process** - Stops the process if the service does not respond within the timeout.
-2. **Clean Install** - Removes all files inside the parent direcotry of the .exe file prior to copying the Artifact.
+2. **Clean Install** - Removes all files inside the parent directory of the .exe file prior to copying the Artifact.
