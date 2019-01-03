@@ -3,7 +3,7 @@
     "id": "WindowsServiceManager",
     "version": "1.0.0",
     "name": "Windows Service Manager",
-    "description": "A Release task that deploys a Windows Service with the use of a Deployment Group Target.",
+    "description": "A Release task that deploys a Windows Service using WinRM.",
     "publisher": "MDSolutions",
     "repository": {
         "type": "git",
