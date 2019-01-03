@@ -40,3 +40,17 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 1. **Stop Process** - Stops the process if the service does not respond within the timeout.
 2. **Clean Install** - Removes all files inside the parent directory of the .exe file prior to copying the Artifact.
+
+## Release Notes
+
+### Version 0
+
+Supports deployment groups only.
+
+### Version 1
+
+Supports deployment groups and agents using WinRM.
+
+### Version 2
+
+Resolved bug for service name matching, service name will only support exact names.
