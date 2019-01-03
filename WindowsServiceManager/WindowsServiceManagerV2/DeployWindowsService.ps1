@@ -39,7 +39,7 @@ $scriptBlock = {
     $CleanInstall = $args[3]
     $ArtifactPath = $args[4]
     Write-Output "Getting [$ServiceName]"
-    $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
+    $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
     If ($serviceObject)
     {  
         If ($serviceObject.State -eq 'Running')
@@ -48,7 +48,7 @@ $scriptBlock = {
             Write-Output "Stopping [$ServiceName]"
             Do
             {
-                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
+                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
                 $results = $serviceObject.StopService()
                 If ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout)
                 {
@@ -68,7 +68,7 @@ $scriptBlock = {
                         Write-Error "[$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
                     }
                 }
-                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -match $ServiceName}
+                $serviceObject = Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
             }
             While ($serviceObject.State -ne 'Stopped')
         }

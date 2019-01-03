@@ -2,7 +2,7 @@
     "id": "7dad075d-a817-45ac-baab-4c1376d2885e",
     "name": "WindowsServiceManager",
     "friendlyName": "Windows Service Manager",
-    "description": "Deploys a Windows Service with an Agent or a Deployment Group Target.",
+    "description": "Deploys a Windows Service to an Agent or a Deployment Group Target using WinRM.",
     "helpMarkDown": "",
     "category": "Utility",
     "visibility": [
@@ -11,7 +11,7 @@
     ],
     "author": "Dejulia489",
     "version": {
-        "Major": 1,
+        "Major": 2,
         "Minor": 0,
         "Patch": 0
     },
