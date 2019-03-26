@@ -21,7 +21,7 @@
             "name": "advanced",
             "displayName": "Advanced",
             "isExpanded": true
-        }
+        },
         {
             "name": "installation",
             "displayName": "Install Service",
