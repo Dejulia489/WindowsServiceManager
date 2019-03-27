@@ -13,7 +13,7 @@
     "version": {
         "Major": 3,
         "Minor": 0,
-        "Patch": 0
+        "Patch": 1
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -118,7 +118,7 @@
             "defaultValue": "",
             "required": true,
             "groupName": "installation",
-            "visibleRule": "InstallService = true",
+            "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the path to the executable file."
           },
           {
@@ -128,7 +128,7 @@
             "defaultValue": "",
             "required": false,
             "groupName": "installation",
-            "visibleRule": "InstallService = true",
+            "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the username the service should run as."
           },
           {
@@ -138,7 +138,7 @@
             "defaultValue": "",
             "required": false,
             "groupName": "installation",
-            "visibleRule": "InstallService = true",
+            "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the password for the Run As Username. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it."
           }
     ],
