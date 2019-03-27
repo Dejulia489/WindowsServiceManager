@@ -40,8 +40,11 @@ If($InstallService)
     $installationPath = Get-VstsInput -Name 'InstallationPath'
     $runAsUsername = Get-VstsInput -Name 'RunAsUsername'
     $runAsPassword = Get-VstsInput -Name 'RunAsPassword'
-    $secureRunAsPassword = ConvertTo-SecureString $runAsPassword -AsPlainText -Force
-    $runAsCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $runAsUsername, $secureRunAsPassword
+    If($runAsPassword)
+    {
+        $secureRunAsPassword = ConvertTo-SecureString $runAsPassword -AsPlainText -Force
+        $runAsCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $runAsUsername, $secureRunAsPassword
+    }
 }
 $scriptBlock = {
     $serviceName      = $args[0]
