@@ -29,8 +29,8 @@ Trace-VstsEnteringInvocation $MyInvocation
 
 If ($DeploymentType -eq 'Agent')
 {
-    $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',')
-    Write-Output ("Begining deployment to [{0}]" -f $_machines -join ', ')
+    $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',').trim()
+    Write-Output ("Begining deployment to [{0}]" -f ($_machines -join ', '))
     $adminLogin = Get-VstsInput -Name 'AdminLogin' -Require
     $password = Get-VstsInput -Name 'Password' -Require
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
@@ -63,12 +63,12 @@ $scriptBlock = {
         )
         Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
     }
-    Write-Output "Attempting to locate [$ServiceName]"
+    Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
     # If the service does not exist and the installtion path can only be provided if the Install Service flag is passed.
     If($null -eq $serviceObject -and $null -ne $installationPath)
     {
-        Write-Output "Unable to locate [$ServiceName] creating a new service"
+        Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
         $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
         $serviceObject = Get-WindowsService -ServiceName $ServiceName
     }
@@ -77,7 +77,7 @@ $scriptBlock = {
         If ($serviceObject.State -eq 'Running')
         {
             $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
-            Write-Output "Stopping [$ServiceName]"
+            Write-Output "[$env:ComputerName]: Stopping [$ServiceName]"
             Do
             {
                 $serviceObject = Get-WindowsService -ServiceName $ServiceName
@@ -86,18 +86,18 @@ $scriptBlock = {
                 {
                     If ($StopProcess)
                     {
-                        Write-Verbose "[$ServiceName] did not respond within [$Timeout] seconds, stopping process."
+                        Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
                         $allProcesses = Get-Process
                         $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"}
                         If ($process)
                         {
-                            Write-Warning "Files are still in use by [$($process.ProcessName)], stopping the process!"
+                            Write-Warning "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
                             $process | Stop-Process -Force -ErrorAction SilentlyContinue
                         }
                     }
                     Else
                     {
-                        Write-Error "[$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
+                        Write-Error "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
                     }
                 }
                 $serviceObject = Get-WindowsService -ServiceName $ServiceName
@@ -105,12 +105,12 @@ $scriptBlock = {
             While ($serviceObject.State -ne 'Stopped')
         }
         $parentPath = ($serviceObject.PathName | Split-Path -Parent).Replace('"', '')
-        Write-Output "Identified [$ServiceName] installation directory [$parentPath]"
+        Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
         If (Test-Path $parentPath)
         {
             If ($CleanInstall)
             {
-                Write-Output "Clean install set to [$CleanInstall], removing [$parentPath]"
+                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
                 Do
                 {
@@ -126,12 +126,12 @@ $scriptBlock = {
                             {
                                 If ($StopProcess)
                                 {
-                                    Write-Verbose "[$ServiceName] did not respond within [$Timeout] seconds, stopping process." 
+                                    Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process." 
                                     $allProcesses = Get-Process
                                     $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
                                     If ($process)
                                     {
-                                        Write-Warning "Files are still in use by [$($process.ProcessName)], stopping the process!"
+                                        Write-Warning "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
                                         $process | Stop-Process -Force -ErrorAction SilentlyContinue
                                     }
                                 }
@@ -149,7 +149,7 @@ $scriptBlock = {
                     }
                     If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $Timeout)
                     {
-                        Write-Error "[$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
+                        Write-Error "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
                     }
                 }
                 While (Test-Path $parentPath)
@@ -160,18 +160,18 @@ $scriptBlock = {
         {
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
-        Write-Output "Copying [$ArtifactPath] to [$parentPath]"
+        Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
-        Write-Output "Starting [$ServiceName]"
+        Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
         $respone = $serviceObject.StartService()
         If ($respone.ReturnValue -ne 0)
         {
-            Write-Error "Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details." -ErrorAction Stop
+            Write-Error "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details." -ErrorAction Stop
         }
     }
     else
     {
-        Write-Error "Unable to locate [$ServiceName] on [$Env:ComputerName], confirm the service is installed correctly." -ErrorAction Stop   
+        Write-Error "[$env:ComputerName]: Unable to locate [$ServiceName], confirm the service is installed correctly." -ErrorAction Stop   
     }
 }
 

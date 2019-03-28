@@ -12,7 +12,7 @@
     "author": "MDSolutions",
     "version": {
         "Major": 3,
-        "Minor": 3,
+        "Minor": 5,
         "Patch": 0
     },
     "instanceNameFormat": "Deploy Windows Service",
