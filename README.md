@@ -43,14 +43,16 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 ## Release Notes
 
-### Version 0
+[![Build status](https://dev.azure.com/michaeldejulia/WindowsServiceManager/_apis/build/status/WindowsServiceManager)](https://dev.azure.com/michaeldejulia/WindowsServiceManager/_build/latest?definitionId=3)
 
-Supports deployment groups only.
+### Version 2
+
+Resolved bug for service name matching, service name will only support exact names.
 
 ### Version 1
 
 Supports deployment groups and agents using WinRM.
 
-### Version 2
+### Version 0
 
-Resolved bug for service name matching, service name will only support exact names.
+Supports deployment groups only.
