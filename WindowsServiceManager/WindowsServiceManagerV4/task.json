@@ -10,9 +10,7 @@
         "Release"
     ],
     "author": "MDSolutions",
-    "preview": {
-        "type": true
-      },
+    "preview": true,
     "version": {
         "Major": 4,
         "Minor": 1,
@@ -113,8 +111,8 @@
             "groupName": "installation",
             "defaultValue": "false",
             "helpMarkDown": "Select the option to install the windows service."
-          },
-          {
+        },
+        {
             "name": "InstallationPath",
             "type": "string",
             "label": "Installation Path",
@@ -123,8 +121,8 @@
             "groupName": "installation",
             "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the path to the executable file."
-          },
-          {
+        },
+        {
             "name": "RunAsUsername",
             "type": "string",
             "label": "Run As Username",
@@ -133,8 +131,8 @@
             "groupName": "installation",
             "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the username the service should run as."
-          },
-          {
+        },
+        {
             "name": "RunAsPassword",
             "type": "string",
             "label": "Run As Password",
@@ -143,7 +141,7 @@
             "groupName": "installation",
             "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the password for the Run As Username. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it."
-          }
+        }
     ],
     "execution": {
         "PowerShell3": {
