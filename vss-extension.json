@@ -42,7 +42,7 @@
         "default": "Images\\icon.png"
     },
     "categories": [
-        "Build and release"
+        "Azure Pipelines"
     ],
     "contributions": [
         {
