@@ -29,7 +29,8 @@ Trace-VstsEnteringInvocation $MyInvocation
 
 If ($DeploymentType -eq 'Agent')
 {
-    $machines = (Get-VstsInput -Name 'Machines' -Require).Split(',')
+    $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',')
+    Write-Output ("Begining deployment to [{0}]" -f $_machines -join ', ')
     $adminLogin = Get-VstsInput -Name 'AdminLogin' -Require
     $password = Get-VstsInput -Name 'Password' -Require
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
@@ -62,12 +63,12 @@ $scriptBlock = {
         )
         Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
     }
-    Write-Output "Getting [$ServiceName]"
+    Write-Output "Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
     # If the service does not exist and the installtion path can only be provided if the Install Service flag is passed.
     If($null -eq $serviceObject -and $null -ne $installationPath)
     {
-        Write-Output "Creating [$ServiceName]"
+        Write-Output "Unable to locate [$ServiceName] creating a new service"
         $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
         $serviceObject = Get-WindowsService -ServiceName $ServiceName
     }
@@ -104,7 +105,7 @@ $scriptBlock = {
             While ($serviceObject.State -ne 'Stopped')
         }
         $parentPath = ($serviceObject.PathName | Split-Path -Parent).Replace('"', '')
-        Write-Output "Identified [$ServiceName] install location [$parentPath]"
+        Write-Output "Identified [$ServiceName] installation directory [$parentPath]"
         If (Test-Path $parentPath)
         {
             If ($CleanInstall)
@@ -180,7 +181,7 @@ $invokeCommandSplat = @{
 If($credential)
 {
     $invokeCommandSplat.Credential = $credential
-    $invokeCommandSplat.ComputerName = $machines
+    $invokeCommandSplat.ComputerName = $_machines
 }
 Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential
 Trace-VstsLeavingInvocation $MyInvocation
