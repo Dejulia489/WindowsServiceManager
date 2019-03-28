@@ -47,7 +47,7 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 ### Version 4 (preview)
 
-**Implementing** desired state configuration xService support to ensure the state of a service at deployment time.
+**Implementing** desired state configuration xService support to enforce the configuration of a service at deployment time.
 
 ### Version 3
 
