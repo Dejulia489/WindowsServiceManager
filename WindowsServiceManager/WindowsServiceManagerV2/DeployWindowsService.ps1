@@ -26,7 +26,7 @@ Trace-VstsEnteringInvocation $MyInvocation
 
 If ($DeploymentType -eq 'Agent')
 {
-    $machines = (Get-VstsInput -Name 'Machines' -Require).Split(',')
+    $machines = (Get-VstsInput -Name 'Machines' -Require)
     $adminLogin = Get-VstsInput -Name 'AdminLogin' -Require
     $password = Get-VstsInput -Name 'Password' -Require
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
