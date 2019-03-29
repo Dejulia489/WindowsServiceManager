@@ -135,7 +135,7 @@ $scriptBlock = {
     If($freshTopShelfInstall)
     {
         # Topshelf installation completed the file copy so skip the clean install process
-        Start-WindowsService -ServiceName $serviceName -serviceObject $serviceObject
+        Start-WindowsService -ServiceName $ServiceName
     }
     ElseIf ($serviceObject)
     {  
@@ -227,7 +227,7 @@ $scriptBlock = {
         }
         Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
-        Start-WindowsService -ServiceName $serviceName -serviceObject $serviceObject
+        Start-WindowsService -ServiceName $ServiceName
     }
     else
     {
