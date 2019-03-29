@@ -45,9 +45,9 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 [![Build status](https://dev.azure.com/michaeldejulia/WindowsServiceManager/_apis/build/status/WindowsServiceManager)](https://dev.azure.com/michaeldejulia/WindowsServiceManager/_build/latest?definitionId=3)
 
-### Version 4 (preview)
+### Version 4
 
-**Implementing** desired state configuration xService support to enforce the configuration of a service at deployment time.
+Implemented support for installing TopShelf windows services.
 
 ### Version 3
 
