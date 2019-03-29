@@ -59,8 +59,6 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 ## Release Notes
 
-[![Build status]("https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_apis/build/status/WindowsServiceManager")]("https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_build/latest?definitionId=3")
-
 ### Version 4
 
 Implemented support for installing [TopShelf](https://github.com/Topshelf/Topshelf) windows services.
