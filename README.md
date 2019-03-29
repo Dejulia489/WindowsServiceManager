@@ -2,7 +2,7 @@
 
 ## Tasks Included
 
-Windows Service Manager - Deploys a windows service installed on a target machine or a deployment group target.
+Windows Service Manager - Installs and deploys a windows service or [TopShelf](https://github.com/Topshelf/Topshelf) service on a target machine or a deployment group target.
 
 1. Locates the service by the **Service Name**
 2. Stops the service
@@ -23,6 +23,14 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsDeploymentGroup.png?raw=true "Task Options Deployment Group")
 
+### Advanced Task Options
+
+![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsAdvanced.png?raw=true "Advanced Task Options")
+
+### Installation Task Options
+
+![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsInstallation.png?raw=true "Installation Task Options")
+
 #### Required Fields
 
 1. **Deployment Type** - Deploying with either an Agent or a Deployment Group Target.
@@ -41,13 +49,23 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 1. **Stop Process** - Stops the process if the service does not respond within the timeout.
 2. **Clean Install** - Removes all files inside the parent directory of the .exe file prior to copying the Artifact.
 
+#### Installation Fields
+
+1. **Install the windows service** - Enables service installation.
+2. **Installation Path** - The path to the executable file.
+3. **Run As Username** - The username the service should run as.
+4. **Run As Password** - The password for the Run As Username. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.
+5. **Install as a TopShelf Service** - Enables [TopShelf](https://github.com/Topshelf/Topshelf) installation.
+6. **Instance Name** - The name of the [TopShelf](https://github.com/Topshelf/Topshelf) instance.
+7. **Install Arguments** - The TopShelf installation arguments.
+
 ## Release Notes
 
-[![Build status](https://dev.azure.com/michaeldejulia/WindowsServiceManager/_apis/build/status/WindowsServiceManager)](https://dev.azure.com/michaeldejulia/WindowsServiceManager/_build/latest?definitionId=3)
+[![Build status](https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_apis/build/status/WindowsServiceManager)](https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_build/latest?definitionId=3)
 
 ### Version 4
 
-Implemented support for installing TopShelf windows services.
+Implemented support for installing [TopShelf](https://github.com/Topshelf/Topshelf) windows services.
 
 ### Version 3
 

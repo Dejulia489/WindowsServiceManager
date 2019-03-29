@@ -18,6 +18,12 @@
         },
         {
             "path": "Images\\TaskOptionsAgent.png"
+        },
+        {
+            "path": "Images\\TaskOptionsAdvanced.png"
+        },
+        {
+            "path": "Images\\TaskOptionsInstallation.png"
         }
     ],
     "content": {
@@ -30,6 +36,7 @@
         "Azure DevOps Pipelines",
         "Windows Service",
         "VSTS",
+        "TopShelf",
         "Visual Studio Team Services"
     ],
     "license": "MIT",
