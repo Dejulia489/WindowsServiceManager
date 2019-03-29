@@ -81,6 +81,8 @@ $scriptBlock = {
         Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
         If($installTopShelfService)
         {
+            Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$installationPath]"
+            Copy-Item -Path "$ArtifactPath\*" -Destination $installationPath -Force -Recurse -ErrorAction Stop
             $arguments = @(
                 'install'
                 '-servicename:{0}' -f $ServiceName
@@ -99,6 +101,7 @@ $scriptBlock = {
                 $arguments += $installArguments
             }
             . $installationPath $arguments
+            $freshTopShelfInstall = $true
         }
         Else
         {
@@ -106,7 +109,12 @@ $scriptBlock = {
             $serviceObject = Get-WindowsService -ServiceName $ServiceName
         }
     }
-    If ($serviceObject)
+    If($freshTopShelfInstall)
+    {
+        # Topshelf installation completed the file copy so skip the process below
+        Write-Output "[$env:ComputerName]: [$ServiceName] was installed to [$installationPath]"
+    }
+    ElseIf ($serviceObject)
     {  
         If ($serviceObject.State -eq 'Running')
         {
