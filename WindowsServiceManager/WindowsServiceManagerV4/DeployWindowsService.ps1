@@ -65,8 +65,9 @@ $scriptBlock = {
     $installTopShelfService = $args[7]
     $instanceName           = $args[8]
     $installArguments       = $args[9]
-    If($null -ne $instanceName)
+    If($instanceName.Length -ne 0)
     {
+        Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
         $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $instanceName
     }
     Function Get-WindowsService
