@@ -14,6 +14,8 @@ Windows Service Manager - Installs and deploys a windows service or [TopShelf](h
 
 After installing the [Windows Service Manager](https://marketplace.visualstudio.com/items?itemName=MDSolutions.WindowsServiceManagerWindowsServiceManager) extension, open a release and add the 'Windows Service Manager' task.
 
+![Task](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/Task.png?raw=true "Task")
+
 ### Task Options for Deployment Group
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsDeploymentGroup.png?raw=true "Task Options Deployment Group")

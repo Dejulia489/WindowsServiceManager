@@ -24,6 +24,9 @@
         },
         {
             "path": "Images\\TaskOptionsInstallation.png"
+        },
+        {
+            "path": "Images\\Task.png"
         }
     ],
     "content": {
