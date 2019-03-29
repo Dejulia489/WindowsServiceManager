@@ -16,10 +16,11 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 
 ![Task](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/Task.png?raw=true "Task")
 
+## Task Options
+
 ### Task Options for Deployment Group
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsDeploymentGroup.png?raw=true "Task Options Deployment Group")
-
 
 1. **Display Name** - The name of the task.
 2. **Deployment Type** - Deploying with either an Agent or a Deployment Group Target.
