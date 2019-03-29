@@ -149,6 +149,7 @@
             "required": false,
             "groupName": "installation",
             "defaultValue": "false",
+            "visibleRule": "InstallService=true",
             "helpMarkDown": "Select the option to install the windows service as a TopShelf service."
         },
         {
@@ -156,7 +157,7 @@
             "type": "string",
             "label": "Instance Name",
             "defaultValue": "",
-            "required": true,
+            "required": false,
             "groupName": "installation",
             "visibleRule": "InstallTopShelfService=true",
             "helpMarkDown": "The name of the TopShelf instance."
@@ -166,7 +167,7 @@
             "type": "string",
             "label": "Install Arguments",
             "defaultValue": "",
-            "required": true,
+            "required": false,
             "groupName": "installation",
             "visibleRule": "InstallTopShelfService=true",
             "helpMarkDown": "TopShelf installation arguments."
