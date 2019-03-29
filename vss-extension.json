@@ -3,7 +3,7 @@
     "id": "WindowsServiceManager",
     "version": "1.0.0",
     "name": "Windows Service Manager",
-    "description": "A Release task that deploys a Windows Service using WinRM. [More Information](https://github.com/Dejulia489/WindowsServiceManager)",
+    "description": "Installs and deploys a windows service or TopShelf service on a target machine or a deployment group target.",
     "publisher": "MDSolutions",
     "repository": {
         "type": "git",
