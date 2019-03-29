@@ -2,7 +2,7 @@
     "id": "7dad075d-a817-45ac-baab-4c1376d2885e",
     "name": "WindowsServiceManager",
     "friendlyName": "Windows Service Manager",
-    "description": "Deploys a Windows Service to an Agent or a Deployment Group Target using WinRM.",
+    "description": "Deploys a Windows Service to an Agent or a Deployment Group Target using WinRM. [More Information](https://github.com/Dejulia489/WindowsServiceManager)",
     "helpMarkDown": "",
     "category": "Utility",
     "visibility": [
@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 1,
-        "Patch": 10
+        "Patch": 11
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -160,7 +160,7 @@
             "required": false,
             "groupName": "installation",
             "visibleRule": "InstallTopShelfService=true",
-            "helpMarkDown": "The name of the TopShelf instance."
+            "helpMarkDown": "The name of the TopShelf instance. [More Information](https://github.com/Topshelf/Topshelf)"
         },
         {
             "name": "InstallArguments",
@@ -170,7 +170,7 @@
             "required": false,
             "groupName": "installation",
             "visibleRule": "InstallTopShelfService=true",
-            "helpMarkDown": "TopShelf installation arguments."
+            "helpMarkDown": "TopShelf installation arguments. [More Information](https://github.com/Topshelf/Topshelf)"
         }
     ],
     "execution": {
