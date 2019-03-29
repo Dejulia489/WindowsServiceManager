@@ -77,10 +77,10 @@ $scriptBlock = {
     {
         param
         (
-            $ServiceName,
-            $serviceObject
+            $ServiceName
         )
         Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
+        $serviceObject = Get-WindowsService -ServiceName $ServiceName
         $respone = $serviceObject.StartService()
         If ($respone.ReturnValue -ne 0)
         {
