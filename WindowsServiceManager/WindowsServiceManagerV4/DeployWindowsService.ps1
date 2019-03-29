@@ -69,9 +69,27 @@ $scriptBlock = {
     {
         param
         (
-            $ServiceName = $ServiceName
+            $ServiceName
         )
         Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
+    }
+    Function Start-WindowsService
+    {
+        param
+        (
+            $ServiceName,
+            $serviceObject
+        )
+        Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
+        $respone = $serviceObject.StartService()
+        If ($respone.ReturnValue -ne 0)
+        {
+            Write-Error "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details." -ErrorAction Stop
+        }
+        else 
+        {
+            Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
+        }
     }
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
@@ -111,13 +129,13 @@ $scriptBlock = {
         Else
         {
             $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
-            $serviceObject = Get-WindowsService -ServiceName $ServiceName
         }
     }
+    $serviceObject = Get-WindowsService -ServiceName $ServiceName
     If($freshTopShelfInstall)
     {
-        # Topshelf installation completed the file copy so skip the process below
-        Write-Output "[$env:ComputerName]: [$ServiceName] was installed to [$installationPath]"
+        # Topshelf installation completed the file copy so skip the clean install process
+        Start-WindowsService -ServiceName $serviceName -serviceObject $serviceObject
     }
     ElseIf ($serviceObject)
     {  
@@ -209,12 +227,7 @@ $scriptBlock = {
         }
         Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
-        Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
-        $respone = $serviceObject.StartService()
-        If ($respone.ReturnValue -ne 0)
-        {
-            Write-Error "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details." -ErrorAction Stop
-        }
+        Start-WindowsService -ServiceName $serviceName -serviceObject $serviceObject
     }
     else
     {
