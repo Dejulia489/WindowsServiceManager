@@ -141,6 +141,35 @@
             "groupName": "installation",
             "visibleRule": "InstallService=true",
             "helpMarkDown": "Provide the password for the Run As Username. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it."
+        },
+        {
+            "name": "InstallTopShelfService",
+            "type": "boolean",
+            "label": "Install as a TopShelf service",
+            "required": false,
+            "groupName": "installation",
+            "defaultValue": "false",
+            "helpMarkDown": "Select the option to install the windows service as a TopShelf service."
+        },
+        {
+            "name": "InstanceName",
+            "type": "string",
+            "label": "Instance Name",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "installation",
+            "visibleRule": "InstallTopShelfService=true",
+            "helpMarkDown": "The name of the TopShelf instance."
+        },
+        {
+            "name": "InstallArguments",
+            "type": "string",
+            "label": "Install Arguments",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "installation",
+            "visibleRule": "InstallTopShelfService=true",
+            "helpMarkDown": "TopShelf installation arguments."
         }
     ],
     "execution": {

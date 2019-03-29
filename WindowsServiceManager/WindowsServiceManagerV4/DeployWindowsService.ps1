@@ -24,6 +24,7 @@ param
 
     [Parameter()]
     $InstallService = (Get-VstsInput -Name 'InstallService' -AsBool)
+    
 )
 Trace-VstsEnteringInvocation $MyInvocation
 
@@ -38,6 +39,12 @@ If ($DeploymentType -eq 'Agent')
 }
 If($InstallService)
 {
+    $installTopShelfService = Get-VstsInput -Name 'InstallTopShelfService' -AsBool
+    If($installTopShelfService)
+    {
+        $instanceName = Get-VstsInput -Name 'InstanceName'
+        $installArguments = Get-VstsInput -Name 'InstallArguments'
+    }
     $installationPath = Get-VstsInput -Name 'InstallationPath'
     $runAsUsername = Get-VstsInput -Name 'RunAsUsername'
     $runAsPassword = Get-VstsInput -Name 'RunAsPassword'
@@ -48,13 +55,16 @@ If($InstallService)
     }
 }
 $scriptBlock = {
-    $serviceName      = $args[0]
-    $Timeout          = $args[1]
-    $StopProcess      = $args[2]
-    $CleanInstall     = $args[3]
-    $ArtifactPath     = $args[4]
-    $installationPath = $args[5]
-    $runAsCredential  = $args[6]
+    $serviceName            = $args[0]
+    $Timeout                = $args[1]
+    $StopProcess            = $args[2]
+    $CleanInstall           = $args[3]
+    $ArtifactPath           = $args[4]
+    $installationPath       = $args[5]
+    $runAsCredential        = $args[6]
+    $installTopShelfService = $args[7]
+    $instanceName           = $args[8]
+    $installArguments       = $args[9]
     Function Get-WindowsService
     {
         param
@@ -69,8 +79,32 @@ $scriptBlock = {
     If($null -eq $serviceObject -and $null -ne $installationPath)
     {
         Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
-        $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
-        $serviceObject = Get-WindowsService -ServiceName $ServiceName
+        If($installTopShelfService)
+        {
+            $arguments = @(
+                'install'
+                '-servicename:{0}' -f $ServiceName
+            )
+            If($runAsCredential)
+            {
+                $arguments += '-username:{0}' -f $runAsCredential.UserName
+                $arguments += '-password:{0}' -f $runAsCredential.GetNetworkCredential().Password
+            }
+            If($instanceName)
+            {
+                $arguments += '-instance:{0}' -f $instanceName
+            }
+            If($installArguments)
+            {
+                $arguments += $installArguments
+            }
+            . $installationPath $arguments
+        }
+        Else
+        {
+            $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
+            $serviceObject = Get-WindowsService -ServiceName $ServiceName
+        }
     }
     If ($serviceObject)
     {  
@@ -183,5 +217,5 @@ If($credential)
     $invokeCommandSplat.Credential = $credential
     $invokeCommandSplat.ComputerName = $_machines
 }
-Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential
+Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments
 Trace-VstsLeavingInvocation $MyInvocation
