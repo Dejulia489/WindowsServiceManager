@@ -12,8 +12,7 @@ Windows Service Manager - Installs and deploys a windows service or [TopShelf](h
 
 ## Install and Run
 
-After installing the Azure DevOps Pipelines extension from the link below, open a release and add the 'Windows Service Manager' task.
-[Windows Service Manager](https://marketplace.visualstudio.com/items?itemName=MDSolutions.WindowsServiceManagerWindowsServiceManager)
+After installing the [Windows Service Manager](https://marketplace.visualstudio.com/items?itemName=MDSolutions.WindowsServiceManagerWindowsServiceManager) extension, open a release and add the 'Windows Service Manager' task.
 
 ### Task Options for Deployment Group
 
