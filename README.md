@@ -19,18 +19,24 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsDeploymentGroup.png?raw=true "Task Options Deployment Group")
 
-1. **Deployment Type** - Deploying with either an Agent or a Deployment Group Target.
-2. **Service Name** - The name of the Windows Service installed on the Deployment Group Target.
-3. **Artifact Path** - The path to the Artifact that contains the Windows Service binaries.
-4. **Timeout** - The number of seconds to wait for the service to stop.
+
+1. **Display Name** - The name of the task.
+2. **Deployment Type** - Deploying with either an Agent or a Deployment Group Target.
+3. **Service Name** - The name of the Windows Service installed on the Deployment Group Target.
+4. **Artifact Path** - The path to the Artifact that contains the Windows Service binaries.
+5. **Timeout** - The number of seconds to wait for the service to stop.
 
 ### Task Options for Agent
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsAgent.png?raw=true "Task Options Agent")
 
-1. **Machines** - Provide a comma separated list of machine IP addresses or FQDNs. Or provide output variable of other tasks. Eg: $(variableName).
-2. **Admin Login** - Administrator login for the target machines.
-3. **Password** - Password for administrator login for the target machines. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.
+1. **Display Name** - The name of the task.
+2. **Machines** - Provide a comma separated list of machine IP addresses or FQDNs. Or provide output variable of other tasks. Eg: $(variableName).
+3. **Admin Login** - Administrator login for the target machines.
+4. **Password** - Password for administrator login for the target machines. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.
+5. **Service Name** - The name of the Windows Service installed on the Deployment Group Target.
+6. **Artifact Path** - The path to the Artifact that contains the Windows Service binaries.
+7. **Timeout** - The number of seconds to wait for the service to stop.
 
 ### Advanced Task Options
 
@@ -53,7 +59,7 @@ After installing the Azure DevOps Pipelines extension from the link below, open 
 
 ## Release Notes
 
-[![Build status]("https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_apis/build/status/WindowsServiceManager")](https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_build/latest?definitionId=3)
+[![Build status]("https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_apis/build/status/WindowsServiceManager")]("https://dev.azure.com/MaDSolutionsLLC/Windows Service Manager/_build/latest?definitionId=3")
 
 ### Version 4
 
