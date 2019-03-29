@@ -81,12 +81,13 @@ $scriptBlock = {
         Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
         If($installTopShelfService)
         {
-            If(-not(Test-Path $installationPath))
+            $parentPath = $installationPath | Split-Path -Parent
+            If(-not(Test-Path $parentPath))
             {
-                $null = New-Item -Path $installationPath -ItemType 'Directory' -Force
+                $null = New-Item -Path $parentPath -ItemType 'Directory' -Force
             }
-            Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$installationPath]"
-            Copy-Item -Path "$ArtifactPath\*" -Destination $installationPath -Force -Recurse -ErrorAction Stop
+            Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
+            Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
             $arguments = @(
                 'install'
                 '-servicename:{0}' -f $ServiceName
