@@ -32,22 +32,22 @@ If ($DeploymentType -eq 'Agent')
 {
     $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',').trim()
     Write-Output ("Begining deployment to [{0}]" -f ($_machines -join ', '))
-    $adminLogin = Get-VstsInput -Name 'AdminLogin' -Require
-    $password = Get-VstsInput -Name 'Password' -Require
+    $adminLogin = (Get-VstsInput -Name 'AdminLogin' -Require )
+    $password = (Get-VstsInput -Name 'Password' -Require )
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
     $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminLogin, $securePassword
 }
 If($InstallService)
 {
-    $installTopShelfService = Get-VstsInput -Name 'InstallTopShelfService' -AsBool
+    $installTopShelfService = (Get-VstsInput -Name 'InstallTopShelfService' -AsBool )
     If($installTopShelfService)
     {
-        $instanceName = Get-VstsInput -Name 'InstanceName'
-        $installArguments = Get-VstsInput -Name 'InstallArguments'
+        $instanceName = (Get-VstsInput -Name 'InstanceName' )
+        $installArguments = (Get-VstsInput -Name 'InstallArguments' )
     }
-    $installationPath = Get-VstsInput -Name 'InstallationPath'
-    $runAsUsername = Get-VstsInput -Name 'RunAsUsername'
-    $runAsPassword = Get-VstsInput -Name 'RunAsPassword'
+    $installationPath = (Get-VstsInput -Name 'InstallationPath' )
+    $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
+    $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
     If($runAsPassword)
     {
         $secureRunAsPassword = ConvertTo-SecureString $runAsPassword -AsPlainText -Force
