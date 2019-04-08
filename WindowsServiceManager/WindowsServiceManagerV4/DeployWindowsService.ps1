@@ -48,6 +48,8 @@ If($InstallService)
     $installationPath = (Get-VstsInput -Name 'InstallationPath' )
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
+    Write-Host "[$env:ComputerName]: RunAs: [$runAsPassword]"
+
     If($runAsPassword)
     {
         $secureRunAsPassword = ConvertTo-SecureString $runAsPassword -AsPlainText -Force
