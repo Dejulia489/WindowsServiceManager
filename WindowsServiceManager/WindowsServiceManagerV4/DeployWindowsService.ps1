@@ -48,7 +48,6 @@ If($InstallService)
     $installationPath = (Get-VstsInput -Name 'InstallationPath' )
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
-    Write-Host "[$env:ComputerName]: RunAs: [$runAsPassword]"
 
     If($runAsPassword)
     {
@@ -120,7 +119,7 @@ $scriptBlock = {
             If($runAsCredential)
             {
                 $arguments += '-username:{0}' -f $runAsCredential.UserName
-                $arguments += '-password:{0}{1}{0}' -f "'", $runAsCredential.GetNetworkCredential().Password
+                $arguments += '-password:{0}' -f $runAsCredential.GetNetworkCredential().Password
             }
             If($instanceName)
             {
