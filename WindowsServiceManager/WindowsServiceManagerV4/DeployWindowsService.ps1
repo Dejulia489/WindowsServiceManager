@@ -118,7 +118,7 @@ $scriptBlock = {
             If($runAsCredential)
             {
                 $arguments += '-username:{0}' -f $runAsCredential.UserName
-                $arguments += '-password:{0}' -f $runAsCredential.GetNetworkCredential().Password
+                $arguments += "-password:'{0}'" -f $runAsCredential.GetNetworkCredential().Password
             }
             If($instanceName)
             {
