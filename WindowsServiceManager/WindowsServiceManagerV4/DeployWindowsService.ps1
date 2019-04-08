@@ -118,7 +118,7 @@ $scriptBlock = {
             If($runAsCredential)
             {
                 $arguments += '-username:{0}' -f $runAsCredential.UserName
-                $arguments += "-password:'{0}'" -f $runAsCredential.GetNetworkCredential().Password
+                $arguments += '-password:{0}{1}{0}' -f "'", $runAsCredential.GetNetworkCredential().Password
             }
             If($instanceName)
             {
@@ -128,7 +128,7 @@ $scriptBlock = {
             {
                 $arguments += $installArguments
             }
-            Write-Host "Installing topshelf with arguments $arguments"
+            Write-Host "[$env:ComputerName]: Installing topshelf with arguments $arguments"
             & $installationPath $arguments
             $freshTopShelfInstall = $true
         }
