@@ -128,7 +128,8 @@ $scriptBlock = {
             {
                 $arguments += $installArguments
             }
-            . $installationPath $arguments
+            Write-Host "Installing topshelf with arguments $arguments"
+            & $installationPath $arguments
             $freshTopShelfInstall = $true
         }
         Else
