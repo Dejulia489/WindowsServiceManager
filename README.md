@@ -16,6 +16,8 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 
 ![Task](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/Task.png?raw=true "Task")
 
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=M69DLQ52C5RP2&currency_code=USD&source=url)
+
 ## Task Options
 
 ### Task Options for Deployment Group
@@ -61,22 +63,22 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 
 ## Release Notes
 
-### Version 4
+#### Version 4
 
 Implemented support for installing [TopShelf](https://github.com/Topshelf/Topshelf) windows services.
 
-### Version 3
+#### Version 3
 
 Implemented feature request for installing a service and resolved bug for multiple machine support.
 
-### Version 2
+#### Version 2
 
 Resolved bug for service name matching, service name will only support exact names.
 
-### Version 1
+#### Version 1
 
 Supports deployment groups and agents using WinRM.
 
-### Version 0
+#### Version 0
 
 Supports deployment groups only.
