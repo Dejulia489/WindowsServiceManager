@@ -78,7 +78,7 @@ $scriptBlock = {
         {
             If ($CleanInstall)
             {
-                Write-Output "Clean install set to [$CleanInstall], removing [$parentPath]"
+                Write-Output "Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
                 Do
                 {
@@ -120,7 +120,7 @@ $scriptBlock = {
                         Write-Error "[$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
                     }
                 }
-                While (Test-Path $parentPath)
+                While (Get-ChildItem -Path $parentPath -Recurse -Force)
                 $null = New-Item -ItemType Directory -Path $parentPath -Force
             }
         }

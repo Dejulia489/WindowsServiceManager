@@ -167,7 +167,7 @@ $scriptBlock = {
                         $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"}
                         If ($process)
                         {
-                            Write-Warning "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
+                            Write-TaskWarning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
                             $process | Stop-Process -Force -ErrorAction SilentlyContinue
                         }
                     }
@@ -186,7 +186,7 @@ $scriptBlock = {
         {
             If ($CleanInstall)
             {
-                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing [$parentPath]"
+                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
                 Do
                 {
@@ -207,7 +207,7 @@ $scriptBlock = {
                                     $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
                                     If ($process)
                                     {
-                                        Write-Warning "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
+                                        Write-TaskWarning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
                                         $process | Stop-Process -Force -ErrorAction SilentlyContinue
                                     }
                                 }
@@ -228,7 +228,7 @@ $scriptBlock = {
                         return Write-TaskError -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed."
                     }
                 }
-                While (Test-Path $parentPath)
+                While (Get-ChildItem -Path $parentPath -Recurse -Force)
                 $null = New-Item -ItemType Directory -Path $parentPath -Force
             }
         }

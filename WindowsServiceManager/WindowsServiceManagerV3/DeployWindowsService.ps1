@@ -24,7 +24,7 @@ param
 
     [Parameter()]
     $InstallService = (Get-VstsInput -Name 'InstallService' -AsBool)
-)
+    )
 Trace-VstsEnteringInvocation $MyInvocation
 
 If ($DeploymentType -eq 'Agent')
@@ -110,7 +110,7 @@ $scriptBlock = {
         {
             If ($CleanInstall)
             {
-                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing [$parentPath]"
+                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
                 Do
                 {
@@ -152,7 +152,7 @@ $scriptBlock = {
                         Write-Error "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
                     }
                 }
-                While (Test-Path $parentPath)
+                While (Get-ChildItem -Path $parentPath -Recurse -Force)
                 $null = New-Item -ItemType Directory -Path $parentPath -Force
             }
         }
