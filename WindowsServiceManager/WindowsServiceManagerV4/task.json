@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 1,
-        "Patch": 19
+        "Patch": 20
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
