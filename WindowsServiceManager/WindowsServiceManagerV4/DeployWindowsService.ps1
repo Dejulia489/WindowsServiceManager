@@ -48,7 +48,7 @@ If($InstallService)
     $installationPath = (Get-VstsInput -Name 'InstallationPath' )
     If(-not($installationPath.EndsWith('.exe')))
     {
-        return Write-Error -Message "The installation path parameter should end with an '.exe'. This parameter should be populated with a path to the service executable."
+        return Write-Error -Message "The installation path parameter should end with an '.exe'. InstallationPath should be populated with a path to the service executable but it is currently [$InstallationPath]."
     }
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
