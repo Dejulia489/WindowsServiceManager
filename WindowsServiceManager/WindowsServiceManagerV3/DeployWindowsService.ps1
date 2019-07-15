@@ -116,7 +116,7 @@ $scriptBlock = {
                 {
                     Try
                     {
-                        Remove-Item -Path $parentPath -Force -Recurse -ErrorAction Stop
+                        Get-ChildItem -Path $parentPath -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Stop
                     }
                     Catch
                     {

@@ -46,6 +46,10 @@ If($InstallService)
         $installArguments = (Get-VstsInput -Name 'InstallArguments' )
     }
     $installationPath = (Get-VstsInput -Name 'InstallationPath' )
+    If(-not($installationPath.EndsWith('.exe')))
+    {
+        return Write-TaskError -Message "The installation path parameter should end with an '.exe'. This parameter should be populated with a path to the service executable."
+    }
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
 
@@ -90,7 +94,7 @@ $scriptBlock = {
         $respone = $serviceObject.StartService()
         If ($respone.ReturnValue -ne 0)
         {
-            Write-Error "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details." -ErrorAction Stop
+            return Write-TaskError -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
         }
         else 
         {
@@ -169,7 +173,7 @@ $scriptBlock = {
                     }
                     Else
                     {
-                        Write-Error "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
+                        return Write-TaskError -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds."             
                     }
                 }
                 $serviceObject = Get-WindowsService -ServiceName $ServiceName
@@ -188,7 +192,7 @@ $scriptBlock = {
                 {
                     Try
                     {
-                        Remove-Item -Path $parentPath -Force -Recurse -ErrorAction Stop
+                        Get-ChildItem -Path $parentPath -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Stop
                     }
                     Catch
                     {
@@ -209,19 +213,19 @@ $scriptBlock = {
                                 }
                                 else
                                 {
-                                    Write-Error $PSItem -ErrorAction Stop
+                                    return Write-TaskError -Message $PSItem
                                 }
     
                             }
                             Default
                             {
-                                Write-Error $PSItem -ErrorAction Stop
+                                return Write-TaskError -Message $PSItem
                             }
                         }
                     }
                     If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $Timeout)
                     {
-                        Write-Error "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed." -ErrorAction Stop
+                        return Write-TaskError -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed."
                     }
                 }
                 While (Test-Path $parentPath)
@@ -238,7 +242,7 @@ $scriptBlock = {
     }
     else
     {
-        Write-Error "[$env:ComputerName]: Unable to locate [$ServiceName], confirm the service is installed correctly." -ErrorAction Stop   
+        return Write-TaskError "[$env:ComputerName]: Unable to locate [$ServiceName], confirm the service is installed correctly." 
     }
 }
 
