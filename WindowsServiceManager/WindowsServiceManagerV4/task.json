@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 1,
-        "Patch": 23
+        "Patch": 25
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -61,6 +61,22 @@
             "label": "Password",
             "required": true,
             "helpMarkDown": "Password for administrator login for the target machines. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.",
+            "visibleRule": "DeploymentType=Agent"
+        },
+        {
+            "name": "NewPsSessionOptionArguments",
+            "type": "multiLine",
+            "label": "Session Option parameters",
+            "required": false,
+            "helpMarkDown": "Advanced options for remote session (New-PSSessionOption). For example, -SkipCACheck, -SkipCNCheck, -SkipRevocationCheck etc. For a complete list of all session options, see [this](https://aka.ms/Vsts_PS_TM_v3_NewPSSessionOptions)",
+            "visibleRule": "DeploymentType=Agent"
+        },
+        {
+            "name": "UseSSL",
+            "type": "boolean",
+            "label": "Use SSL",
+            "required": false,
+            "helpMarkDown": "Select HTTPS instead of HTTP for WINRM.",
             "visibleRule": "DeploymentType=Agent"
         },
         {
