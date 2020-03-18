@@ -69,7 +69,15 @@ $scriptBlock = {
     If($null -eq $serviceObject -and $null -ne $installationPath)
     {
         Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
-        $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
+        $newServiceSplat = @{
+            Name = $ServiceName
+            BinaryPathName = $installationPath
+        }
+        If($runAsCredential)
+        {
+            $newServiceSplat.Credential = $runAsCredential
+        }
+        $newService = New-Service @newServiceSplat
         $serviceObject = Get-WindowsService -ServiceName $ServiceName
     }
     If ($serviceObject)

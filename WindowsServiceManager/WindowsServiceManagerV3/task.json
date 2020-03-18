@@ -12,8 +12,8 @@
     "author": "MDSolutions",
     "version": {
         "Major": 3,
-        "Minor": 5,
-        "Patch": 4
+        "Minor": 6,
+        "Patch": 0
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [

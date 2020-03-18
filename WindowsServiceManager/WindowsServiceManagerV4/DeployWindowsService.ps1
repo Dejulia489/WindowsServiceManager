@@ -139,7 +139,15 @@ $scriptBlock = {
         }
         Else
         {
-            $newService = New-Service -Name $ServiceName -BinaryPathName $installationPath -Credential $runAsCredential
+            $newServiceSplat = @{
+                Name = $ServiceName
+                BinaryPathName = $installationPath
+            }
+            If($runAsCredential)
+            {
+                $newServiceSplat.Credential = $runAsCredential
+            }
+            $newService = New-Service @newServiceSplat
         }
     }
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
