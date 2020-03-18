@@ -28,6 +28,8 @@ param
 )
 Trace-VstsEnteringInvocation $MyInvocation
 
+. "$PSScriptRoot\Utility.ps1"
+
 If ($DeploymentType -eq 'Agent')
 {
     $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',').trim()
@@ -36,6 +38,9 @@ If ($DeploymentType -eq 'Agent')
     $password = (Get-VstsInput -Name 'Password' -Require )
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
     $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminLogin, $securePassword
+    $input_NewPsSessionOptionArguments = (Get-VstsInput -Name "NewPsSessionOptionArguments")
+    $sessionOption = Get-NewPSSessionOption -arguments $input_NewPsSessionOptionArguments
+    $useSSL = (Get-VstsInput -Name 'UseSSL' -AsBool)
 }
 If($InstallService)
 {
@@ -261,6 +266,14 @@ If($credential)
 {
     $invokeCommandSplat.Credential = $credential
     $invokeCommandSplat.ComputerName = $_machines
+}
+if($sessionOption)
+{
+    $invokeCommandSplat.sessionOption = $sessionOption
+}
+if($useSSL)
+{
+    $invokeCommandSplat.UseSSL = $true
 }
 Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments
 Trace-VstsLeavingInvocation $MyInvocation
