@@ -99,14 +99,14 @@ $scriptBlock = {
         Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
         $serviceObject = Get-WindowsService -ServiceName $ServiceName
         $respone = $serviceObject.StartService()
-         If ($respone.ReturnValue -ne 0)
-         {
-             return Write-Error -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
-         }
-         else 
-         {
-             Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
-         }
+        If ($respone.ReturnValue -ne 0)
+        {
+            return Write-Error -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
+        }
+        else 
+        {
+            Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
+        }
     }
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
