@@ -23,8 +23,10 @@ param
     $StopProcess = (Get-VstsInput -Name 'StopProcess' -AsBool),
 
     [Parameter()]
-    $InstallService = (Get-VstsInput -Name 'InstallService' -AsBool)
+    $InstallService = (Get-VstsInput -Name 'InstallService' -AsBool),
     
+    [Parameter()]
+    $StartService = (Get-VstsInput -Name 'StartService' -AsBool)
 )
 Trace-VstsEnteringInvocation $MyInvocation
 
@@ -159,7 +161,11 @@ $scriptBlock = {
     If($freshTopShelfInstall)
     {
         # Topshelf installation completed the file copy so skip the clean install process
-        Start-WindowsService -ServiceName $ServiceName
+        
+        If ($StartService)
+        {
+            Start-WindowsService -ServiceName $ServiceName
+        }
     }
     ElseIf ($serviceObject)
     {  
@@ -251,7 +257,12 @@ $scriptBlock = {
         }
         Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
-        Start-WindowsService -ServiceName $ServiceName
+        
+        If($StartService)
+        {
+            Start-WindowsService -ServiceName $ServiceName
+        }
+
     }
     else
     {
