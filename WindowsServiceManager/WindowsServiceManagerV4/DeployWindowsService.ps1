@@ -77,6 +77,7 @@ $scriptBlock = {
     $installTopShelfService = $args[7]
     $instanceName           = $args[8]
     $installArguments       = $args[9]
+    $startService           = $args[10]
     If($instanceName.Length -ne 0)
     {
         Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
@@ -162,7 +163,7 @@ $scriptBlock = {
     {
         # Topshelf installation completed the file copy so skip the clean install process
         
-        If ($StartService)
+        If ($startService)
         {
             Start-WindowsService -ServiceName $ServiceName
         }
@@ -258,7 +259,7 @@ $scriptBlock = {
         Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
         
-        If($StartService)
+        If($startService)
         {
             Start-WindowsService -ServiceName $ServiceName
         }
@@ -286,5 +287,5 @@ if($useSSL)
 {
     $invokeCommandSplat.UseSSL = $true
 }
-Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments
+Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
 Trace-VstsLeavingInvocation $MyInvocation
