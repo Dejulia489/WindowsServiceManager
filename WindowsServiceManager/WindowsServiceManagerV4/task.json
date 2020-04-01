@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 3,
-        "Patch": 0
+        "Patch": 1
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -130,7 +130,7 @@
         {
             "name": "InstallService",
             "type": "boolean",
-            "label": "Install the windows service",
+            "label": "Install Service",
             "required": false,
             "groupName": "installation",
             "defaultValue": "false",
