@@ -120,6 +120,15 @@
             "helpMarkDown": "Deletes all files from the Windows Service parent directory prior to deployment of the artifact."
         },
         {
+            "name": "StartService",
+            "type": "boolean",
+            "label": "Start service after installation",
+            "required": false,
+            "groupName": "advanced",
+            "defaultValue": "true",
+            "helpMarkDown": "Select the option to start the service after installation."
+        },
+        {
             "name": "InstallService",
             "type": "boolean",
             "label": "Install the windows service",
@@ -167,16 +176,6 @@
             "defaultValue": "false",
             "visibleRule": "InstallService=true",
             "helpMarkDown": "Select the option to install the windows service as a TopShelf service."
-        },
-		{
-            "name": "StartService",
-            "type": "boolean",
-            "label": "Start service after installation",
-            "required": false,
-            "groupName": "installation",
-            "defaultValue": "false",
-            "visibleRule": "InstallService=true",
-            "helpMarkDown": "Select the option to start the service after installation."
         },
         {
             "name": "InstanceName",
