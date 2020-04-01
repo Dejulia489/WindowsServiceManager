@@ -13,7 +13,7 @@
     "preview": false,
     "version": {
         "Major": 4,
-        "Minor": 2,
+        "Minor": 3,
         "Patch": 0
     },
     "instanceNameFormat": "Deploy Windows Service",
