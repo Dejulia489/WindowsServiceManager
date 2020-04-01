@@ -109,7 +109,7 @@
             "label": "Stop Process",
             "defaultValue": false,
             "groupName": "advanced",
-            "helpMarkDown": "Stops the process if the service does not respond within the timeout limit."
+            "helpMarkDown": "Select the option to stop the process if the service does not respond within the timeout limit."
         },
         {
             "name": "CleanInstall",
@@ -117,7 +117,7 @@
             "label": "Clean Install",
             "defaultValue": false,
             "groupName": "advanced",
-            "helpMarkDown": "Deletes all files from the Windows Service parent directory prior to deployment of the artifact."
+            "helpMarkDown": "Select the option to delete all files from the Windows Service parent directory prior to deployment of the artifact."
         },
         {
             "name": "StartService",
