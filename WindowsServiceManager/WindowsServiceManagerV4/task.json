@@ -123,7 +123,6 @@
             "name": "StartService",
             "type": "boolean",
             "label": "Start service after installation",
-            "required": false,
             "groupName": "advanced",
             "defaultValue": "true",
             "helpMarkDown": "Select the option to start the service after installation."
