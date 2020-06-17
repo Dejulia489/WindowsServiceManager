@@ -63,18 +63,31 @@ if ($InstallService) {
     }
 }
 
+# Set default values of optional parameters.
+if (-not $ServiceDisplayName) {
+    $ServiceDisplayName = $ServiceName
+}
+
+# fix ServiceName (can not contain Spaces)
+if ($ServiceName.Contains(' ')) {
+    $ServiceName = $ServiceName.Replace(' ', '')
+}
+
 $scriptBlock = {
-    $serviceName = $args[0]
-    $Timeout = $args[1]
-    $StopProcess = $args[2]
-    $CleanInstall = $args[3]
-    $ArtifactPath = $args[4]
-    $installationPath = $args[5]
-    $runAsCredential = $args[6]
-    $installTopShelfService = $args[7]
-    $instanceName = $args[8]
-    $installArguments = $args[9]
-    $startService = $args[10]
+    $serviceName =              $args[0]
+    $serviceDisplayName =       $args[1]
+    $serviceDescription =       $args[2]
+    $serviceStartupType =       $args[3]
+    $Timeout =                  $args[4]
+    $StopProcess =              $args[5]
+    $CleanInstall =             $args[6]
+    $ArtifactPath =             $args[7]
+    $installationPath =         $args[8]
+    $runAsCredential =          $args[9]
+    $installTopShelfService =   $args[10]
+    $instanceName =             $args[11]
+    $installArguments =         $args[12]
+    $startService =             $args[13]
 
     if ($instanceName.Length -ne 0) {
         Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
@@ -139,14 +152,29 @@ $scriptBlock = {
             $freshTopShelfInstall = $true
         }
         else {
+            if ($serviceStartupType -eq "Delayed") {
+                $startupType = "Automatic"
+                $delayed = $true
+            }
+            else {
+                $startupType = $serviceStartupType
+                $delayed = $false
+            }
+
             $newServiceSplat = @{
                 Name           = $ServiceName
-                BinaryPathName = $installationPath
+                DisplayName    = $serviceDisplayName
+                Description    = $serviceDescription
+                StartupType    = $startupType
             }
             if ($runAsCredential) {
                 $newServiceSplat.Credential = $runAsCredential
             }
             $newService = New-Service @newServiceSplat
+
+            if ($delayed) {
+                Start-Process -FilePath sc.exe -ArgumentList "config ""$ServiceName"" start=delayed-auto"
+            }
         }
     }
 
@@ -256,5 +284,5 @@ if ($useSSL) {
     $invokeCommandSplat.UseSSL = $true
 }
 
-Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
+Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $serviceDisplayName, $serviceDescription, $serviceStartupType, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
 Trace-VstsLeavingInvocation $MyInvocation

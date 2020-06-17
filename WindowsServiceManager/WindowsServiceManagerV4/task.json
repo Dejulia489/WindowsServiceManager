@@ -13,8 +13,8 @@
     "preview": false,
     "version": {
         "Major": 4,
-        "Minor": 3,
-        "Patch": 5
+        "Minor": 4,
+        "Patch": 0
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -86,6 +86,36 @@
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "The exact name of the windows service installed on the deployment group target."
+        },
+        {
+            "name": "ServiceDisplayName",
+            "type": "string",
+            "label": "Service Displayname",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Displayname of the windows service."
+        },
+        {
+            "name": "ServiceDescription",
+            "type": "string",
+            "label": "Service Description",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Displayname of the windows service."
+        },
+        {
+            "name": "ServiceStartupType",
+            "type": "radio",
+            "label": "Service Startup Type",
+            "defaultValue": "Automatic",
+            "required": true,
+            "helpMarkDown": "The path to the windows service artifact.",
+            "options": {
+                "Automatic": "Automatic",
+                "Delayed": "Automatic (Delayed Start)",
+                "Manual": "Manual",
+                "Disabled": "Disabled"
+            }
         },
         {
             "name": "ArtifactPath",
