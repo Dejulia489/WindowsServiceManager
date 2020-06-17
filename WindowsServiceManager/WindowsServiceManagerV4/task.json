@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 4,
-        "Patch": 0
+        "Patch": 1
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -101,7 +101,7 @@
             "label": "Service Description",
             "defaultValue": "",
             "required": false,
-            "helpMarkDown": "The Displayname of the windows service."
+            "helpMarkDown": "The Description of the windows service."
         },
         {
             "name": "ServiceStartupType",

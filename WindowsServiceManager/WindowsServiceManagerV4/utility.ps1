@@ -18,7 +18,7 @@ function Get-WindowsService {
     (
         $ServiceName
     )
-    Get-WmiObject -Class Win32_Service | Where-Object { $PSItem.Name -eq $ServiceName }
+    return Get-WmiObject -Class Win32_Service | Where-Object { $PSItem.Name -eq $ServiceName }
 }
 
 function Start-WindowsService {
@@ -63,7 +63,7 @@ function Stop-WindowsService {
                 if ($StopProcess) {
                     Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
 
-                    $fullPath  = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName
+                    $parentPath  = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
 
                     $allProcesses = Get-Process
                     $process = $allProcesses | Where-Object { $_.Path -like "$parentPath\*" }
@@ -81,9 +81,8 @@ function Stop-WindowsService {
         while ($serviceObject.State -ne 'Stopped')
 
         Write-Output "[$env:ComputerName]: Stopped Service [$ServiceName]"
-
-        return $serviceObject
     }
+    return $serviceObject    
 }
 
 function Get-FullExecuteablePath {
