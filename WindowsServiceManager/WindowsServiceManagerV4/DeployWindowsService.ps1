@@ -52,19 +52,12 @@ if ($InstallService) {
     }
     $startCommand = (Get-VstsInput -Name 'InstallationPath' )
 
-    # pattern to analyse Service Startup Command 
-    $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/.-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/. -]+)(.exe|.dll)))(" |"$))'
-
     $serviceDisplayName = (Get-VstsInput -Name 'ServiceDisplayName')
     $serviceDescription = (Get-VstsInput -Name 'ServiceDescription')
     $serviceStartupType = (Get-VstsInput -Name 'ServiceStartupType')
 
-    if ($startCommand -notmatch $matchPattern) {
-        return Write-Error -Message "The installation path parameter should contain a valid Path ending with an '.exe' or '.dll'. InstallationPath should be populated with a path to the service executable but it is currently [$InstallationPath]."
-    }
-    else {
-        $installationPath = if ($matches.path) { $matches.path } else { $matches.path2 }
-    }
+    $installationPath = Get-FullExecuteablePath -StringContainingPath $startCommand
+
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
 
@@ -106,37 +99,13 @@ $scriptBlock = {
         $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $instanceName
     }
 
-    function Get-WindowsService {
-        param
-        (
-            $ServiceName
-        )
-        Get-WmiObject -Class Win32_Service | Where-Object { $PSItem.Name -eq $ServiceName }
-    }
-
-    function Start-WindowsService {
-        param
-        (
-            $ServiceName
-        )
-        Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
-        $serviceObject = Get-WindowsService -ServiceName $ServiceName
-        $respone = $serviceObject.StartService()
-        if ($respone.ReturnValue -ne 0) {
-            return Write-Error -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
-        }
-        else {
-            Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
-        }
-    }
-
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
     # If the service does not exist and the installtion path can only be provided if the Install Service flag is passed.
     if ($null -eq $serviceObject -and $null -ne $installationPath) {
         Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
         if ($installTopShelfService) {
-            $parentPath = $installationPath | Split-Path -Parent
+            $parentPath = Get-FullExecuteablePath -StringContainingPath $installationPath -JustParentPath
             if (-not(Test-Path $parentPath)) {
                 $null = New-Item -Path $parentPath -ItemType 'Directory' -Force
             }
@@ -230,14 +199,7 @@ $scriptBlock = {
             while ($serviceObject.State -ne 'Stopped')
         }
 
-        # check if PathName can be processed
-        if($serviceObject.PathName -notmatch $matchPattern) {
-            return Write-Error -Message "[$env:ComputerName]: [$ServiceName] PathName can't be parsed [$($serviceObject.PathName)]."
-        }
-
-        # extract ParentPath
-        $pathMatch = if ($matches.path) { $matches.path } else { $matches.path2 }
-        $parentPath = ($pathMatch | Split-Path -Parent).Replace('"', '')
+        $parentPath = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
         Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
 
         if (Test-Path $parentPath) {
