@@ -173,32 +173,7 @@ $scriptBlock = {
         }
     }
     elseif ($serviceObject) {  
-        if ($serviceObject.State -eq 'Running') {
-            $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
-            Write-Output "[$env:ComputerName]: Stopping [$ServiceName]"
-            do {
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
-                $results = $serviceObject.StopService()
-
-                if ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout) {
-                    if ($StopProcess) {
-                        Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
-                        $allProcesses = Get-Process
-                        $process = $allProcesses | Where-Object { $_.Path -like "$parentPath\*" }
-                        if ($process) {
-                            Write-Warning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
-                            $process | Stop-Process -Force -ErrorAction SilentlyContinue
-                        }
-                    }
-                    else {
-                        return Write-Error -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds."             
-                    }
-                }
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
-            }
-            while ($serviceObject.State -ne 'Stopped')
-        }
-
+        $serviceObject = Stop-WindowsService -ServiceName $ServiceName -Timeout $Timeout -StopProcess:$StopProcess
         $parentPath = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
         Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
 

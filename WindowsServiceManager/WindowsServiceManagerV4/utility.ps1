@@ -37,6 +37,55 @@ function Start-WindowsService {
     }
 }
 
+function Stop-WindowsService {
+    param
+    (
+        [string]
+        $ServiceName,
+
+        [int]
+        $Timeout = 30,
+
+        [switch]
+        $StopProcess = $false
+    )
+
+    $serviceObject = Get-WindowsService -ServiceName $ServiceName
+    
+    if ($serviceObject.State -eq 'Running') {
+        $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
+        Write-Output "[$env:ComputerName]: Stopping Service [$ServiceName]"
+        do {
+            $serviceObject = Get-WindowsService -ServiceName $ServiceName
+            $results = $serviceObject.StopService()
+
+            if ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout) {
+                if ($StopProcess) {
+                    Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
+
+                    $fullPath  = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName
+
+                    $allProcesses = Get-Process
+                    $process = $allProcesses | Where-Object { $_.Path -like "$parentPath\*" }
+                    if ($process) {
+                        Write-Warning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
+                        $process | Stop-Process -Force -ErrorAction SilentlyContinue
+                    }
+                }
+                else {
+                    return Write-Error -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds."             
+                }
+            }
+            $serviceObject = Get-WindowsService -ServiceName $ServiceName
+        }
+        while ($serviceObject.State -ne 'Stopped')
+
+        Write-Output "[$env:ComputerName]: Stopped Service [$ServiceName]"
+
+        return $serviceObject
+    }
+}
+
 function Get-FullExecuteablePath {
     [CmdletBinding()]
     param (
