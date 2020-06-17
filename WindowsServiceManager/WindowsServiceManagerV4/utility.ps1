@@ -8,20 +8,22 @@ function Get-NewPSSessionOption {
         $commandString = "New-PSSessionOption $arguments"
         Write-Verbose "New-PSSessionOption command: $commandString"
         return (Invoke-Expression -Command $commandString)
-    } finally {
+    }
+    finally {
         Trace-VstsLeavingInvocation $MyInvocation
     }
 }
 
 function Get-WindowsService {
-    param
-    (
+    [CmdletBinding()]
+    param   (
         $ServiceName
     )
     return Get-WmiObject -Class Win32_Service | Where-Object { $PSItem.Name -eq $ServiceName }
 }
 
 function Start-WindowsService {
+    [CmdletBinding()]
     param
     (
         $ServiceName
@@ -38,6 +40,7 @@ function Start-WindowsService {
 }
 
 function Stop-WindowsService {
+    [CmdletBinding()]
     param
     (
         [string]
@@ -63,7 +66,7 @@ function Stop-WindowsService {
                 if ($StopProcess) {
                     Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
 
-                    $parentPath  = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
+                    $parentPath = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
 
                     $allProcesses = Get-Process
                     $process = $allProcesses | Where-Object { $_.Path -like "$parentPath\*" }
@@ -87,7 +90,8 @@ function Stop-WindowsService {
 
 function Get-FullExecuteablePath {
     [CmdletBinding()]
-    param (
+    param 
+    (
         [string]
         $StringContainingPath,
 
@@ -98,7 +102,7 @@ function Get-FullExecuteablePath {
     $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/.-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/. -]+)(.exe|.dll)))(" |"$))'
 
     # check if PathName can be processed
-    if($StringContainingPath -notmatch $matchPattern) {
+    if ($StringContainingPath -notmatch $matchPattern) {
         return Write-Error -Message "String can't be parsed. The StringContainingPath parameter should contain a valid Path ending with an '.exe' or '.dll'. Current string [$StringContainingPath]"
     }
 

@@ -144,6 +144,7 @@ $scriptBlock = {
             $freshTopShelfInstall = $true
         }
         else {
+            Write-Output "[$env:ComputerName]: Start creating Service [$ServiceName]."
             if ($serviceStartupType -eq "Delayed") {
                 $startupType = "Automatic"
                 $delayed = $true
@@ -157,18 +158,27 @@ $scriptBlock = {
                 Name           = $ServiceName
                 BinaryPathName = $startCommand
                 DisplayName    = $serviceDisplayName
-                Description    = $serviceDescription
                 StartupType    = $startupType
             }
+
+            # add Description just if Descripion is provided to prevent Parameter null or empty Exception
+            if($serviceDescription) {                
+                Write-Output "[$env:ComputerName]: Adding Description [$serviceDescription]"
+                $newServiceSplat.Description = $serviceDescription
+            }
+
             if ($runAsCredential) {
+                Write-Output "[$env:ComputerName]: Setting RunAsCredentials"
                 $newServiceSplat.Credential = $runAsCredential
                 # load Function
                 . "$PSScriptRoot\Add-LocalUserToLogonAsAService.ps1"
-                Add-LocalUserToLogonAsAService -user $runAsCredential
+                Add-LocalUserToLogonAsAService -user $runAsCredential.UserName
             }
-            $newService = New-Service @newServiceSplat
+            $newService = New-Service @newServiceSplat            
+            Write-Output "[$env:ComputerName]: Service [$ServiceName] created."
 
             if ($delayed) {
+                Write-Output "[$env:ComputerName]: Set [$ServiceName] to Delayed start"
                 Start-Process -FilePath sc.exe -ArgumentList "config ""$ServiceName"" start=delayed-auto"
             }
         }
@@ -255,5 +265,5 @@ if ($useSSL) {
     $invokeCommandSplat.UseSSL = $true
 }
 
-Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $serviceDisplayName, $serviceDescription, $serviceStartupType, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
+Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $serviceDisplayName, $serviceDescription, $serviceStartupType, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $startCommand, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
 Trace-VstsLeavingInvocation $MyInvocation

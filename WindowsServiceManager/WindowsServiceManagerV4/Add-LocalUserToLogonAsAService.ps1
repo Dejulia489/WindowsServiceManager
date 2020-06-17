@@ -13,29 +13,20 @@
 #function added by Robin Carlsson, robintheswede.com, 2017-03-08
 
 function Add-LocalUserToLogonAsAService {
- [CmdletBinding()]
+	[CmdletBinding()]
 	param (
 		[parameter(Mandatory = $true)]
 		[string]$user
 	)
-
+   
 	PROCESS {
-		param($accountToAdd)
-		#written by Ingo Karstein, http://blog.karstein-consulting.com
-		#  v1.0, 01/03/2014
-
-		## <--- Configure here
-
-		if ( [string]::IsNullOrEmpty($accountToAdd) ) {
-			Write-Host "no account specified"
-			exit
+		if ( [string]::IsNullOrEmpty($user) ) {
+			return Write-Error "no account specified"
 		}
-
-		## ---> End of Config
 
 		$sidstr = $null
 		try {
-			$ntprincipal = new-object System.Security.Principal.NTAccount "$accountToAdd"
+			$ntprincipal = new-object System.Security.Principal.NTAccount "$user"
 			$sid = $ntprincipal.Translate([System.Security.Principal.SecurityIdentifier])
 			$sidstr = $sid.Value.ToString()
 		}
@@ -43,11 +34,10 @@ function Add-LocalUserToLogonAsAService {
 			$sidstr = $null
 		}
 
-		Write-Host "Account: $($accountToAdd)" -ForegroundColor DarkCyan
+		Write-Host "Account: $($user)" -ForegroundColor DarkCyan
 
 		if ( [string]::IsNullOrEmpty($sidstr) ) {
-			Write-Host "Account not found!" -ForegroundColor Red
-			exit -1
+			return Write-Error "Account not found!"
 		}
 
 		Write-Host "Account SID: $($sidstr)" -ForegroundColor DarkCyan
