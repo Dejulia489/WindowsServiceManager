@@ -54,7 +54,7 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsInstallation.png?raw=true "Installation Task Options")
 
 1. **Install the windows service** - Enables service installation.
-2. **Installation Path** - The path to the executable file.
+2. **Start Command** - Command to start the executable including arguments. Containing path is also used to Install Artifacts.
 3. **Run As Username** - The username the service should run as.
 4. **Run As Password** - The password for the Run As Username. It can accept variable defined in Build/Release definitions as '$(passwordVariable)'. You may mark variable type as 'secret' to secure it.
 5. **Install as a TopShelf Service** - Enables [TopShelf](https://github.com/Topshelf/Topshelf) installation.
@@ -62,6 +62,13 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 7. **Install Arguments** - The TopShelf installation arguments.
 
 ## Release Notes
+
+#### Version 4.4
+
+Implemented support to set Displayname, Description and StartupType for non TopShelf services.
+Implemented support for Command Arguments
+Implemented support to install dotnet based Service
+Fixed Permission issue (add RunAsService Permission while installation)
 
 #### Version 4
 

@@ -50,9 +50,20 @@ if ($InstallService) {
         $instanceName = (Get-VstsInput -Name 'InstanceName' )
         $installArguments = (Get-VstsInput -Name 'InstallArguments' )
     }
-    $installationPath = (Get-VstsInput -Name 'InstallationPath' )
-    if (-not($installationPath.EndsWith('.exe'))) {
-        return Write-Error -Message "The installation path parameter should end with an '.exe'. InstallationPath should be populated with a path to the service executable but it is currently [$InstallationPath]."
+    $startCommand = (Get-VstsInput -Name 'InstallationPath' )
+
+    # pattern to analyse Service Startup Command 
+    $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/.-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/. -]+)(.exe|.dll)))(" |"$))'
+
+    $serviceDisplayName = (Get-VstsInput -Name 'ServiceDisplayName')
+    $serviceDescription = (Get-VstsInput -Name 'ServiceDescription')
+    $serviceStartupType = (Get-VstsInput -Name 'ServiceStartupType')
+
+    if ($startCommand -notmatch $matchPattern) {
+        return Write-Error -Message "The installation path parameter should contain a valid Path ending with an '.exe' or '.dll'. InstallationPath should be populated with a path to the service executable but it is currently [$InstallationPath]."
+    }
+    else {
+        $installationPath = if ($matches.path) { $matches.path } else { $matches.path2 }
     }
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
@@ -83,11 +94,12 @@ $scriptBlock = {
     $CleanInstall =             $args[6]
     $ArtifactPath =             $args[7]
     $installationPath =         $args[8]
-    $runAsCredential =          $args[9]
-    $installTopShelfService =   $args[10]
-    $instanceName =             $args[11]
-    $installArguments =         $args[12]
-    $startService =             $args[13]
+    $startCommand =             $args[9]
+    $runAsCredential =          $args[10]
+    $installTopShelfService =   $args[11]
+    $instanceName =             $args[12]
+    $installArguments =         $args[13]
+    $startService =             $args[14]
 
     if ($instanceName.Length -ne 0) {
         Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
@@ -135,7 +147,7 @@ $scriptBlock = {
             $arguments = @(
                 'install'
                 '-servicename:{0}' -f $ServiceName.split('$')[0]
-            )            
+            )
             if ($runAsCredential) {
                 $arguments += '-username:{0}' -f $runAsCredential.UserName
                 $arguments += '-password:{0}' -f $runAsCredential.GetNetworkCredential().Password
@@ -163,6 +175,7 @@ $scriptBlock = {
 
             $newServiceSplat = @{
                 Name           = $ServiceName
+                BinaryPathName = $startCommand
                 DisplayName    = $serviceDisplayName
                 Description    = $serviceDescription
                 StartupType    = $startupType
@@ -182,7 +195,7 @@ $scriptBlock = {
     }
 
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
-
+    
     if ($freshTopShelfInstall) {
         # Topshelf installation completed the file copy so skip the clean install process
         
@@ -197,7 +210,7 @@ $scriptBlock = {
             do {
                 $serviceObject = Get-WindowsService -ServiceName $ServiceName
                 $results = $serviceObject.StopService()
-                
+
                 if ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout) {
                     if ($StopProcess) {
                         Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
@@ -217,7 +230,14 @@ $scriptBlock = {
             while ($serviceObject.State -ne 'Stopped')
         }
 
-        $parentPath = ($serviceObject.PathName | Split-Path -Parent).Replace('"', '')
+        # check if PathName can be processed
+        if($serviceObject.PathName -notmatch $matchPattern) {
+            return Write-Error -Message "[$env:ComputerName]: [$ServiceName] PathName can't be parsed [$($serviceObject.PathName)]."
+        }
+
+        # extract ParentPath
+        $pathMatch = if ($matches.path) { $matches.path } else { $matches.path2 }
+        $parentPath = ($pathMatch | Split-Path -Parent).Replace('"', '')
         Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
 
         if (Test-Path $parentPath) {
