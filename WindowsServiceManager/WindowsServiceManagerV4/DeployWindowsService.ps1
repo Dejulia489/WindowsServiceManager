@@ -169,6 +169,9 @@ $scriptBlock = {
             }
             if ($runAsCredential) {
                 $newServiceSplat.Credential = $runAsCredential
+                # load Function
+                . "$PSScriptRoot\Add-LocalUserToLogonAsAService.ps1"
+                Add-LocalUserToLogonAsAService -user $runAsCredential
             }
             $newService = New-Service @newServiceSplat
 
