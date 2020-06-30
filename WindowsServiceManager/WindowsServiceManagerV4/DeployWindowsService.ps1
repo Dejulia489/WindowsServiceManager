@@ -32,8 +32,7 @@ Trace-VstsEnteringInvocation $MyInvocation
 
 . "$PSScriptRoot\Utility.ps1"
 
-If ($DeploymentType -eq 'Agent')
-{
+if ($DeploymentType -eq 'Agent') {
     $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',').trim()
     Write-Output ("Begining deployment to [{0}]" -f ($_machines -join ', '))
     $adminLogin = (Get-VstsInput -Name 'AdminLogin' -Require )
@@ -44,229 +43,210 @@ If ($DeploymentType -eq 'Agent')
     $sessionOption = Get-NewPSSessionOption -arguments $input_NewPsSessionOptionArguments
     $useSSL = (Get-VstsInput -Name 'UseSSL' -AsBool)
 }
-If($InstallService)
-{
+
+if ($InstallService) {
     $installTopShelfService = (Get-VstsInput -Name 'InstallTopShelfService' -AsBool )
-    If($installTopShelfService)
-    {
+    if ($installTopShelfService) {
         $instanceName = (Get-VstsInput -Name 'InstanceName' )
         $installArguments = (Get-VstsInput -Name 'InstallArguments' )
     }
-    $installationPath = (Get-VstsInput -Name 'InstallationPath' )
-    If(-not($installationPath.EndsWith('.exe')))
-    {
-        return Write-Error -Message "The installation path parameter should end with an '.exe'. InstallationPath should be populated with a path to the service executable but it is currently [$InstallationPath]."
-    }
+    $startCommand = (Get-VstsInput -Name 'InstallationPath' )
+
+    $serviceDisplayName = (Get-VstsInput -Name 'ServiceDisplayName')
+    $serviceDescription = (Get-VstsInput -Name 'ServiceDescription')
+    $serviceStartupType = (Get-VstsInput -Name 'ServiceStartupType')
+
+    $installationPath = Get-FullExecuteablePath -StringContainingPath $startCommand
+
     $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
     $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
 
-    If($runAsPassword)
-    {
+    if ($runAsPassword) {
         $secureRunAsPassword = ConvertTo-SecureString $runAsPassword -AsPlainText -Force
         $runAsCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $runAsUsername, $secureRunAsPassword
     }
 }
+
+# Set default values of optional parameters.
+if (-not $ServiceDisplayName) {
+    $ServiceDisplayName = $ServiceName
+}
+
+# fix ServiceName (can not contain Spaces)
+if ($ServiceName.Contains(' ')) {
+    $ServiceName = $ServiceName.Replace(' ', '')
+}
+
 $scriptBlock = {
-    $serviceName            = $args[0]
-    $Timeout                = $args[1]
-    $StopProcess            = $args[2]
-    $CleanInstall           = $args[3]
-    $ArtifactPath           = $args[4]
-    $installationPath       = $args[5]
-    $runAsCredential        = $args[6]
-    $installTopShelfService = $args[7]
-    $instanceName           = $args[8]
-    $installArguments       = $args[9]
-    $startService           = $args[10]
-    If($instanceName.Length -ne 0)
-    {
+    $serviceName =              $args[0]
+    $serviceDisplayName =       $args[1]
+    $serviceDescription =       $args[2]
+    $serviceStartupType =       $args[3]
+    $Timeout =                  $args[4]
+    $StopProcess =              $args[5]
+    $CleanInstall =             $args[6]
+    $ArtifactPath =             $args[7]
+    $installationPath =         $args[8]
+    $startCommand =             $args[9]
+    $runAsCredential =          $args[10]
+    $installTopShelfService =   $args[11]
+    $instanceName =             $args[12]
+    $installArguments =         $args[13]
+    $startService =             $args[14]
+
+    if ($instanceName.Length -ne 0) {
         Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
         $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $instanceName
     }
-    Function Get-WindowsService
-    {
-        param
-        (
-            $ServiceName
-        )
-        Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
-    }
-    Function Start-WindowsService
-    {
-        param
-        (
-            $ServiceName
-        )
-        Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
-        $serviceObject = Get-WindowsService -ServiceName $ServiceName
-        $respone = $serviceObject.StartService()
-        If ($respone.ReturnValue -ne 0)
-        {
-            return Write-Error -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
-        }
-        else 
-        {
-            Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
-        }
-    }
+    
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
-    # If the service does not exist and the installtion path can only be provided if the Install Service flag is passed.
-    If($null -eq $serviceObject -and $null -ne $installationPath)
-    {
-        Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
-        If($installTopShelfService)
-        {
-            $parentPath = $installationPath | Split-Path -Parent
-            If(-not(Test-Path $parentPath))
-            {
+    # If the service does not exist or cleanInstall is enabled and the installtion path can only be provided if the Install Service flag is passed.
+    if (($null -eq $serviceObject -or $CleanInstall) -and $null -ne $installationPath) {
+        if ($serviceObject) {
+            Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the Service [$ServiceName]"
+
+            $serviceObject = Stop-WindowsService -ServiceName $ServiceName
+
+            $serviceObject.Delete()
+            Write-Output "[$env:ComputerName]: Removed Service [$ServiceName]"            
+        }
+        else {
+            Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
+        }
+
+        if ($installTopShelfService) {
+            $parentPath = Get-FullExecuteablePath -StringContainingPath $installationPath -JustParentPath
+            if (-not(Test-Path $parentPath)) {
                 $null = New-Item -Path $parentPath -ItemType 'Directory' -Force
             }
+
             Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
             Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
+
             $arguments = @(
                 'install'
                 '-servicename:{0}' -f $ServiceName.split('$')[0]
             )
-            If($runAsCredential)
-            {
+            if ($runAsCredential) {
                 $arguments += '-username:{0}' -f $runAsCredential.UserName
                 $arguments += '-password:{0}' -f $runAsCredential.GetNetworkCredential().Password
             }
-            If($instanceName)
-            {
+            if ($instanceName) {
                 $arguments += '-instance:{0}' -f $instanceName
             }
-            If($installArguments)
-            {
+            if ($installArguments) {
                 $arguments += $installArguments
             }
+
             Write-Host "[$env:ComputerName]: Installing topshelf with arguments $arguments"
             & $installationPath $arguments
             $freshTopShelfInstall = $true
         }
-        Else
-        {
+        else {
+            Write-Output "[$env:ComputerName]: Start creating Service [$ServiceName]."
+            if ($serviceStartupType -eq "Delayed") {
+                $startupType = "Automatic"
+                $delayed = $true
+            }
+            else {
+                $startupType = $serviceStartupType
+                $delayed = $false
+            }
+
             $newServiceSplat = @{
-                Name = $ServiceName
-                BinaryPathName = $installationPath
+                Name           = $ServiceName
+                BinaryPathName = $startCommand
+                DisplayName    = $serviceDisplayName
+                StartupType    = $startupType
             }
-            If($runAsCredential)
-            {
+
+            # add Description just if Descripion is provided to prevent Parameter null or empty Exception
+            if($serviceDescription) {                
+                Write-Output "[$env:ComputerName]: Adding Description [$serviceDescription]"
+                $newServiceSplat.Description = $serviceDescription
+            }
+
+            if ($runAsCredential) {
+                Write-Output "[$env:ComputerName]: Setting RunAsCredentials"
                 $newServiceSplat.Credential = $runAsCredential
+                # load Function
+                . "$PSScriptRoot\Add-LocalUserToLogonAsAService.ps1"
+                Add-LocalUserToLogonAsAService -user $runAsCredential.UserName
             }
-            $newService = New-Service @newServiceSplat
+            $newService = New-Service @newServiceSplat            
+            Write-Output "[$env:ComputerName]: Service [$ServiceName] created."
+
+            if ($delayed) {
+                Write-Output "[$env:ComputerName]: Set [$ServiceName] to Delayed start"
+                Start-Process -FilePath sc.exe -ArgumentList "config ""$ServiceName"" start=delayed-auto"
+            }
         }
     }
+
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
-    If($freshTopShelfInstall)
-    {
+    
+    if ($freshTopShelfInstall) {
         # Topshelf installation completed the file copy so skip the clean install process
         
-        If ($startService)
-        {
+        if ($startService) {
             Start-WindowsService -ServiceName $ServiceName
         }
     }
-    ElseIf ($serviceObject)
-    {  
-        If ($serviceObject.State -eq 'Running')
-        {
-            $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
-            Write-Output "[$env:ComputerName]: Stopping [$ServiceName]"
-            Do
-            {
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
-                $results = $serviceObject.StopService()
-                If ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout)
-                {
-                    If ($StopProcess)
-                    {
-                        Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process."
-                        $allProcesses = Get-Process
-                        $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"}
-                        If ($process)
-                        {
-                            Write-Warning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
-                            $process | Stop-Process -Force -ErrorAction SilentlyContinue
-                        }
-                    }
-                    Else
-                    {
-                        return Write-Error -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds."             
-                    }
-                }
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
-            }
-            While ($serviceObject.State -ne 'Stopped')
-        }
-        $parentPath = ($serviceObject.PathName | Split-Path -Parent).Replace('"', '')
+    elseif ($serviceObject) {  
+        $serviceObject = Stop-WindowsService -ServiceName $ServiceName -Timeout $Timeout -StopProcess:$StopProcess
+        $parentPath = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
         Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
-        If (Test-Path $parentPath)
-        {
-            If ($CleanInstall)
-            {
+
+        if (Test-Path $parentPath) {
+            if ($CleanInstall) {
                 Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
-                Do
-                {
-                    Try
-                    {
+                do {
+                    try {
                         Get-ChildItem -Path $parentPath -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Stop
                     }
-                    Catch
-                    {
-                        Switch -Wildcard ($PSItem.ErrorDetails.Message)
-                        {
-                            '*Cannot remove*'
-                            {
-                                If ($StopProcess)
-                                {
+                    catch {
+                        switch -Wildcard ($PSItem.ErrorDetails.Message) {
+                            '*Cannot remove*' {
+                                if ($StopProcess) {
                                     Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process." 
                                     $allProcesses = Get-Process
-                                    $process = $allProcesses | Where-Object {$_.Path -like "$parentPath\*"} 
-                                    If ($process)
-                                    {
+                                    $process = $allProcesses | Where-Object { $_.Path -like "$parentPath\*" } 
+                                    if ($process) {
                                         Write-Warning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
                                         $process | Stop-Process -Force -ErrorAction SilentlyContinue
                                     }
                                 }
-                                else
-                                {
+                                else {
                                     return Write-Error -Message $PSItem
-                                }
-    
+                                }    
                             }
-                            Default
-                            {
+                            default {
                                 return Write-Error -Message $PSItem
                             }
                         }
                     }
-                    If ($cleanInstalltimer.Elapsed.TotalSeconds -gt $Timeout)
-                    {
+                    if ($cleanInstalltimer.Elapsed.TotalSeconds -gt $Timeout) {
                         return Write-Error -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed."
                     }
                 }
-                While (Get-ChildItem -Path $parentPath -Recurse -Force)
+                while (Get-ChildItem -Path $parentPath -Recurse -Force)
                 $null = New-Item -ItemType Directory -Path $parentPath -Force
             }
         }
-        Else
-        {
+        else {
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
+
         Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
         
-        If($startService)
-        {
+        if ($startService) {
             Start-WindowsService -ServiceName $ServiceName
         }
-
     }
-    else
-    {
+    else {
         return Write-Error "[$env:ComputerName]: Unable to locate [$ServiceName], confirm the service is installed correctly." 
     }
 }
@@ -274,18 +254,16 @@ $scriptBlock = {
 $invokeCommandSplat = @{
     ScriptBlock = $scriptBlock
 }
-If($credential)
-{
+if ($credential) {
     $invokeCommandSplat.Credential = $credential
     $invokeCommandSplat.ComputerName = $_machines
 }
-if($sessionOption)
-{
+if ($sessionOption) {
     $invokeCommandSplat.sessionOption = $sessionOption
 }
-if($useSSL)
-{
+if ($useSSL) {
     $invokeCommandSplat.UseSSL = $true
 }
-Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
+
+Invoke-Command @invokeCommandSplat -ArgumentList $ServiceName, $serviceDisplayName, $serviceDescription, $serviceStartupType, $TimeOut, $StopProcess, $CleanInstall, $ArtifactPath, $installationPath, $startCommand, $runAsCredential, $installTopShelfService, $instanceName, $installArguments, $startService
 Trace-VstsLeavingInvocation $MyInvocation

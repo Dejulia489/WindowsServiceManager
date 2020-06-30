@@ -13,8 +13,8 @@
     "preview": false,
     "version": {
         "Major": 4,
-        "Minor": 3,
-        "Patch": 5
+        "Minor": 4,
+        "Patch": 1
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -88,6 +88,36 @@
             "helpMarkDown": "The exact name of the windows service installed on the deployment group target."
         },
         {
+            "name": "ServiceDisplayName",
+            "type": "string",
+            "label": "Service Displayname",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Displayname of the windows service."
+        },
+        {
+            "name": "ServiceDescription",
+            "type": "string",
+            "label": "Service Description",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Description of the windows service."
+        },
+        {
+            "name": "ServiceStartupType",
+            "type": "radio",
+            "label": "Service Startup Type",
+            "defaultValue": "Automatic",
+            "required": true,
+            "helpMarkDown": "The path to the windows service artifact.",
+            "options": {
+                "Automatic": "Automatic",
+                "Delayed": "Automatic (Delayed Start)",
+                "Manual": "Manual",
+                "Disabled": "Disabled"
+            }
+        },
+        {
             "name": "ArtifactPath",
             "type": "filePath",
             "label": "Artifact Path",
@@ -139,12 +169,12 @@
         {
             "name": "InstallationPath",
             "type": "string",
-            "label": "Installation Path",
+            "label": "Start Command",
             "defaultValue": "",
             "required": true,
             "groupName": "installation",
             "visibleRule": "InstallService=true",
-            "helpMarkDown": "Provide the path to the executable file."
+            "helpMarkDown": "Provide the command to start the executable including arguments. Containing path is also used to Install Artifacts."
         },
         {
             "name": "RunAsUsername",
