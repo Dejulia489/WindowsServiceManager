@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 4,
-        "Patch": 2
+        "Patch": 3
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -152,7 +152,7 @@
         {
             "name": "RecreateService",
             "type": "boolean",
-            "label": "Recreate Service",
+            "label": "Recreate service",
             "defaultValue": false,
             "groupName": "advanced",
             "visibleRule": "CleanInstall=true",

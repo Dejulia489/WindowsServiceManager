@@ -113,25 +113,19 @@ $scriptBlock = {
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
     # If the service does not exist or cleanInstall is enabled and the installtion path can only be provided if the Install Service flag is passed.
-    if (($null -eq $serviceObject -or $CleanInstall) -and $null -ne $installationPath)
+    if (($null -eq $serviceObject -or $RecreateService) -and $null -ne $installationPath)
     {
         if ($serviceObject)
         {
-            Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the Service [$ServiceName]"
-
+            Write-Output "[$env:ComputerName]: Recreate service set to [$RecreateService], removing the Service [$ServiceName]"
             $serviceObject = Stop-WindowsService -ServiceName $ServiceName
-
-            if ($RecreateService)
-            {
-                $serviceObject.Delete()
-                Write-Output "[$env:ComputerName]: Removed Service [$ServiceName]"  
-            }
+            $serviceObject.Delete()
+            Write-Output "[$env:ComputerName]: Removed Service [$ServiceName]"  
         }
         else
         {
             Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
         }
-
         if ($installTopShelfService)
         {
             $parentPath = Get-FullExecuteablePath -StringContainingPath $installationPath -JustParentPath
