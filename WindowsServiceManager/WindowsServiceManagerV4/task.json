@@ -150,14 +150,6 @@
             "helpMarkDown": "Select the option to delete all files from the Windows Service parent directory prior to deployment of the artifact."
         },
         {
-            "name": "RecreateService",
-            "type": "boolean",
-            "label": "Recreate service",
-            "defaultValue": false,
-            "groupName": "advanced",
-            "helpMarkDown": "Select the option to delete the service and recreate it."
-        },
-        {
             "name": "StartService",
             "type": "boolean",
             "label": "Start service",
@@ -173,6 +165,15 @@
             "groupName": "installation",
             "defaultValue": "false",
             "helpMarkDown": "Select the option to install the windows service."
+        },
+        {
+            "name": "RecreateService",
+            "type": "boolean",
+            "label": "Recreate service",
+            "defaultValue": false,
+            "groupName": "installation",
+            "visibleRule": "InstallService=true",
+            "helpMarkDown": "Select the option to delete the service and recreate it."
         },
         {
             "name": "InstallationPath",
