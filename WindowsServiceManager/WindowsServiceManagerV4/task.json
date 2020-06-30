@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 4,
-        "Patch": 6
+        "Patch": 7
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -150,14 +150,6 @@
             "helpMarkDown": "Select the option to delete all files from the Windows Service parent directory prior to deployment of the artifact."
         },
         {
-            "name": "StartService",
-            "type": "boolean",
-            "label": "Start service",
-            "groupName": "advanced",
-            "defaultValue": true,
-            "helpMarkDown": "Select the option to start the service after installation."
-        },
-        {
             "name": "InstallService",
             "type": "boolean",
             "label": "Install service",
@@ -173,7 +165,16 @@
             "defaultValue": false,
             "groupName": "installation",
             "visibleRule": "InstallService=true",
-            "helpMarkDown": "Select the option to delete the service and recreate it."
+            "helpMarkDown": "Select the option to delete the service and recreate it if it already exists."
+        },
+        {
+            "name": "StartService",
+            "type": "boolean",
+            "label": "Start service",
+            "groupName": "installation",
+            "visibleRule": "InstallService=true",
+            "defaultValue": true,
+            "helpMarkDown": "Select the option to start the service after installation."
         },
         {
             "name": "InstallationPath",
