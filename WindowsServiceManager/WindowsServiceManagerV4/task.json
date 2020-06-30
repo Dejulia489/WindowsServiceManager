@@ -14,7 +14,7 @@
     "version": {
         "Major": 4,
         "Minor": 4,
-        "Patch": 1
+        "Patch": 2
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
@@ -33,7 +33,7 @@
         {
             "name": "DeploymentType",
             "type": "radio",
-            "label": "Deployment Type",
+            "label": "Deployment type",
             "required": true,
             "defaultValue": "Agent",
             "helpMarkDown": "Deploy with an Agent or a Deployment Group.",
@@ -51,7 +51,7 @@
         },
         {
             "name": "AdminLogin",
-            "label": "Admin Login",
+            "label": "Admin login",
             "required": true,
             "helpMarkDown": "Administrator login for the target machines.",
             "visibleRule": "DeploymentType=Agent"
@@ -66,7 +66,7 @@
         {
             "name": "NewPsSessionOptionArguments",
             "type": "multiLine",
-            "label": "Session Option parameters",
+            "label": "Session option parameters",
             "required": false,
             "helpMarkDown": "Advanced options for remote session (New-PSSessionOption). For example, -SkipCACheck, -SkipCNCheck, -SkipRevocationCheck etc. For a complete list of all session options, see [this](https://aka.ms/Vsts_PS_TM_v3_NewPSSessionOptions)",
             "visibleRule": "DeploymentType=Agent"
@@ -82,7 +82,7 @@
         {
             "name": "ServiceName",
             "type": "string",
-            "label": "Service Name",
+            "label": "Service name",
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "The exact name of the windows service installed on the deployment group target."
@@ -90,7 +90,7 @@
         {
             "name": "ServiceDisplayName",
             "type": "string",
-            "label": "Service Displayname",
+            "label": "Service displayname",
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The Displayname of the windows service."
@@ -98,7 +98,7 @@
         {
             "name": "ServiceDescription",
             "type": "string",
-            "label": "Service Description",
+            "label": "Service description",
             "defaultValue": "",
             "required": false,
             "helpMarkDown": "The Description of the windows service."
@@ -106,7 +106,7 @@
         {
             "name": "ServiceStartupType",
             "type": "radio",
-            "label": "Service Startup Type",
+            "label": "Service startup type",
             "defaultValue": "Automatic",
             "required": true,
             "helpMarkDown": "The path to the windows service artifact.",
@@ -120,7 +120,7 @@
         {
             "name": "ArtifactPath",
             "type": "filePath",
-            "label": "Artifact Path",
+            "label": "Artifact path",
             "defaultValue": "",
             "required": true,
             "helpMarkDown": "The path to the windows service artifact."
@@ -136,7 +136,7 @@
         {
             "name": "StopProcess",
             "type": "boolean",
-            "label": "Stop Process",
+            "label": "Stop process",
             "defaultValue": false,
             "groupName": "advanced",
             "helpMarkDown": "Select the option to stop the process if the service does not respond within the timeout limit."
@@ -144,15 +144,24 @@
         {
             "name": "CleanInstall",
             "type": "boolean",
-            "label": "Clean Install",
+            "label": "Clean binary install",
             "defaultValue": false,
             "groupName": "advanced",
             "helpMarkDown": "Select the option to delete all files from the Windows Service parent directory prior to deployment of the artifact."
         },
         {
+            "name": "RecreateService",
+            "type": "boolean",
+            "label": "Recreate Service",
+            "defaultValue": false,
+            "groupName": "advanced",
+            "visibleRule": "CleanInstall=true",
+            "helpMarkDown": "Select the option to delete the service and recreate it."
+        },
+        {
             "name": "StartService",
             "type": "boolean",
-            "label": "Start Service",
+            "label": "Start service",
             "groupName": "advanced",
             "defaultValue": true,
             "helpMarkDown": "Select the option to start the service after installation."
@@ -160,7 +169,7 @@
         {
             "name": "InstallService",
             "type": "boolean",
-            "label": "Install Service",
+            "label": "Install service",
             "required": false,
             "groupName": "installation",
             "defaultValue": "false",
@@ -169,7 +178,7 @@
         {
             "name": "InstallationPath",
             "type": "string",
-            "label": "Start Command",
+            "label": "Start command",
             "defaultValue": "",
             "required": true,
             "groupName": "installation",
@@ -179,7 +188,7 @@
         {
             "name": "RunAsUsername",
             "type": "string",
-            "label": "Run As Username",
+            "label": "Run As username",
             "defaultValue": "",
             "required": false,
             "groupName": "installation",
@@ -189,7 +198,7 @@
         {
             "name": "RunAsPassword",
             "type": "string",
-            "label": "Run As Password",
+            "label": "Run As password",
             "defaultValue": "",
             "required": false,
             "groupName": "installation",
@@ -209,7 +218,7 @@
         {
             "name": "InstanceName",
             "type": "string",
-            "label": "Instance Name",
+            "label": "Instance name",
             "defaultValue": "",
             "required": false,
             "groupName": "installation",
@@ -219,7 +228,7 @@
         {
             "name": "InstallArguments",
             "type": "string",
-            "label": "Install Arguments",
+            "label": "Install arguments",
             "defaultValue": "",
             "required": false,
             "groupName": "installation",
