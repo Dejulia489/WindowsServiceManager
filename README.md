@@ -2,7 +2,7 @@
 
 ## Tasks Included
 
-Windows Service Manager - Installs and deploys a windows service or [TopShelf](https://github.com/Topshelf/Topshelf) service on a target machine or a deployment group target.
+Windows Service Manager - Installs and deploys a windows service or [TopShelf](https://github.com/Topshelf/Topshelf) service on a target machine or a deployment group target. This task **does not** copy the binaries from an agent to a target machine. Use a deployment group, or use Microsoft's file copy task to copy the binaries from an agent to the target machine.
 
 1. Locates the service by the **Service Name**.
 2. Stops the service.
@@ -31,7 +31,7 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 4. **Artifact path** - The path to the Artifact that contains the Windows Service binaries.
 5. **Timeout** - The number of seconds to wait for the service to stop.
 
-### Task Options for Agent
+### Task Options for Agent 
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsAgent.png?raw=true "Task Options Agent")
 
