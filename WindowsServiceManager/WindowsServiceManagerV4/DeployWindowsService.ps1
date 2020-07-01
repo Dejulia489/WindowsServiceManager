@@ -322,7 +322,7 @@ $scriptBlock = {
             $JustParentPath = $false
         )
         # pattern to analyse Service Startup Command 
-        $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/.-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/. -]+)(.exe|.dll)))(" |"$))'
+        $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/\(\)\[\]{}öäüÖÄÜ°^!§$%&=`´,;@#+._-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/\(\)\[\]{}öäüÖÄÜ°^!§$%&=`´,;@#+._ -]+)(.exe|.dll)))(" |"$))'
     
         # check if PathName can be processed
         if ($StringContainingPath -notmatch $matchPattern) {
