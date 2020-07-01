@@ -63,14 +63,14 @@ function Start-WindowsService {
     (
         $ServiceName
     )
-    Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
+    Write-Host "[$env:ComputerName]: Starting [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
     $respone = $serviceObject.StartService()
     if ($respone.ReturnValue -ne 0) {
         return Write-Error -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
     }
     else {
-        Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
+        Write-Host "[$env:ComputerName]: [$ServiceName] started successfully!"
     }
 }
 
@@ -92,7 +92,7 @@ function Stop-WindowsService {
     
     if ($serviceObject.State -eq 'Running') {
         $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
-        Write-Output "[$env:ComputerName]: Stopping Service [$ServiceName]"
+        Write-Host "[$env:ComputerName]: Stopping Service [$ServiceName]"
         do {
             $serviceObject = Get-WindowsService -ServiceName $ServiceName
             $results = $serviceObject.StopService()
@@ -118,7 +118,7 @@ function Stop-WindowsService {
         }
         while ($serviceObject.State -ne 'Stopped')
 
-        Write-Output "[$env:ComputerName]: Stopped Service [$ServiceName]"
+        Write-Host "[$env:ComputerName]: Stopped Service [$ServiceName]"
     }
     return $serviceObject    
 }
@@ -155,7 +155,7 @@ function Get-FullExecuteablePath {
 if ($DeploymentType -eq 'Agent')
 {
     $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',').trim()
-    Write-Output ("Begining deployment to [{0}]" -f ($_machines -join ', '))
+    Write-Host ("Begining deployment to [{0}]" -f ($_machines -join ', '))
     $adminLogin = (Get-VstsInput -Name 'AdminLogin' -Require )
     $password = (Get-VstsInput -Name 'Password' -Require )
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
@@ -251,14 +251,14 @@ $scriptBlock = {
         (
             $ServiceName
         )
-        Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
+        Write-Host "[$env:ComputerName]: Starting [$ServiceName]"
         $serviceObject = Get-WindowsService -ServiceName $ServiceName
         $respone = $serviceObject.StartService()
         if ($respone.ReturnValue -ne 0) {
             return Write-Error -Message "[$env:ComputerName]: Service responded with [$($respone.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/desktop/cimwin32prov/startservice-method-in-class-win32-service for details."
         }
         else {
-            Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
+            Write-Host "[$env:ComputerName]: [$ServiceName] started successfully!"
         }
     }
     
@@ -280,7 +280,7 @@ $scriptBlock = {
         
         if ($serviceObject.State -eq 'Running') {
             $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
-            Write-Output "[$env:ComputerName]: Stopping Service [$ServiceName]"
+            Write-Host "[$env:ComputerName]: Stopping Service [$ServiceName]"
             do {
                 $serviceObject = Get-WindowsService -ServiceName $ServiceName
                 $results = $serviceObject.StopService()
@@ -306,7 +306,7 @@ $scriptBlock = {
             }
             while ($serviceObject.State -ne 'Stopped')
     
-            Write-Output "[$env:ComputerName]: Stopped Service [$ServiceName]"
+            Write-Host "[$env:ComputerName]: Stopped Service [$ServiceName]"
         }
         return $serviceObject    
     }
@@ -341,25 +341,25 @@ $scriptBlock = {
     
     if ($instanceName.Length -ne 0)
     {
-        Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
+        Write-Host "[$env:ComputerName]: Instance Name: [$instanceName]"
         $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $instanceName
     }
     
-    Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
+    Write-Host "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WindowsService -ServiceName $ServiceName
     # If the service does not exist or cleanInstall is enabled and the installtion path can only be provided if the Install Service flag is passed.
     if (($null -eq $serviceObject -or $RecreateService) -and $null -ne $installationPath)
     {
         if ($serviceObject)
         {
-            Write-Output "[$env:ComputerName]: Recreate service set to [$RecreateService], removing the Service [$ServiceName]"
+            Write-Host "[$env:ComputerName]: Recreate service set to [$RecreateService], removing the Service [$ServiceName]"
             $serviceObject = Stop-WindowsService -ServiceName $ServiceName
             $serviceObject.Delete()
-            Write-Output "[$env:ComputerName]: Removed Service [$ServiceName]"  
+            Write-Host "[$env:ComputerName]: Removed Service [$ServiceName]"  
         }
         else
         {
-            Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
+            Write-Host "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
         }
         if ($installTopShelfService)
         {
@@ -369,7 +369,7 @@ $scriptBlock = {
                 $null = New-Item -Path $parentPath -ItemType 'Directory' -Force
             }
 
-            Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
+            Write-Host "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
             Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
 
             $arguments = @(
@@ -396,7 +396,7 @@ $scriptBlock = {
         }
         else
         {
-            Write-Output "[$env:ComputerName]: Start creating Service [$ServiceName]."
+            Write-Host "[$env:ComputerName]: Start creating Service [$ServiceName]."
             if ($serviceStartupType -eq "Delayed")
             {
                 $startupType = "Automatic"
@@ -418,24 +418,24 @@ $scriptBlock = {
             # add Description just if Descripion is provided to prevent Parameter null or empty Exception
             if ($serviceDescription)
             {                
-                Write-Output "[$env:ComputerName]: Adding Description [$serviceDescription]"
+                Write-Host "[$env:ComputerName]: Adding Description [$serviceDescription]"
                 $newServiceSplat.Description = $serviceDescription
             }
 
             if ($runAsCredential)
             {
-                Write-Output "[$env:ComputerName]: Setting RunAsCredentials"
+                Write-Host "[$env:ComputerName]: Setting RunAsCredentials"
                 $newServiceSplat.Credential = $runAsCredential
                 # load Function
                 . "$PSScriptRoot\Add-LocalUserToLogonAsAService.ps1"
                 Add-LocalUserToLogonAsAService -user $runAsCredential.UserName
             }
             $newService = New-Service @newServiceSplat            
-            Write-Output "[$env:ComputerName]: Service [$ServiceName] created."
+            Write-Host "[$env:ComputerName]: Service [$ServiceName] created."
 
             if ($delayed)
             {
-                Write-Output "[$env:ComputerName]: Set [$ServiceName] to Delayed start"
+                Write-Host "[$env:ComputerName]: Set [$ServiceName] to Delayed start"
                 Start-Process -FilePath sc.exe -ArgumentList "config ""$ServiceName"" start=delayed-auto"
             }
         }
@@ -456,13 +456,13 @@ $scriptBlock = {
     {  
         $serviceObject = Stop-WindowsService -ServiceName $ServiceName -Timeout $Timeout -StopProcess:$StopProcess
         $parentPath = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
-        Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
+        Write-Host "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
 
         if (Test-Path $parentPath)
         {
             if ($CleanInstall)
             {
-                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
+                Write-Host "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
                 $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
                 do
                 {
@@ -512,7 +512,7 @@ $scriptBlock = {
             $null = New-Item -ItemType Directory -Path $parentPath -Force
         }
 
-        Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
+        Write-Host "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
         Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
         
         if ($startService)
