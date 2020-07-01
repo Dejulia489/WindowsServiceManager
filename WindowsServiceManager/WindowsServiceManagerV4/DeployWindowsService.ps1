@@ -197,12 +197,6 @@ if (-not $ServiceDisplayName)
     $ServiceDisplayName = $ServiceName
 }
 
-# fix ServiceName (can not contain Spaces)
-if ($ServiceName.Contains(' '))
-{
-    $ServiceName = $ServiceName.Replace(' ', '')
-}
-
 $scriptBlock = {
     $serviceName = $args[0]
     $serviceDisplayName = $args[1]
@@ -374,7 +368,7 @@ $scriptBlock = {
 
             $arguments = @(
                 'install'
-                '-servicename:{0}' -f $ServiceName.split('$')[0]
+                '-servicename:"{0}"' -f $ServiceName.split('$')[0]
             )
             if ($runAsCredential)
             {
