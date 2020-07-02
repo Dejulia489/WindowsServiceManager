@@ -1,0 +1,7 @@
+{
+    "id": "WindowsServiceManager-Dev",
+    "name": "Windows Service Manager Beta",
+    "icons": {
+        "default": "..\\Images\\beta.png"
+    }
+}

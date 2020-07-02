@@ -1,0 +1,22 @@
+{
+  "name": "windows-service-manager",
+  "version": "0.0.1",
+  "description": "Azure DevOps pipeline task for deploying and installing windows services.",
+  "main": "index.js",
+  "author": "Michael Dejulia",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "npm run package-extension -- --rev-version",
+    "build:dev": "npm run package-extension:dev -- --rev-version",
+    "package-extension": "tfx extension create --manifest-globs vss-extension.json --overrides-file configs/release.json",
+    "package-extension:dev": "tfx extension create --manifest-globs vss-extension.json --overrides-file configs/dev.json",
+    "publish-extension": "tfx extension publish --manifest-globs vss-extension.json"
+  },
+  "dependencies": {
+    "azure-pipelines-task-lib": "^2.9.5"
+  },
+  "devDependencies": {
+    "tfx-cli": "^0.6.3"
+  }
+}

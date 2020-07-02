@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "WindowsServiceManager",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "name": "Windows Service Manager",
     "description": "Installs and deploys a windows service or TopShelf service on a target machine or a deployment group target.",
     "publisher": "MDSolutions",
@@ -48,9 +48,6 @@
             "id": "Microsoft.VisualStudio.Services"
         }
     ],
-    "icons": {
-        "default": "Images\\icon.png"
-    },
     "categories": [
         "Azure Pipelines"
     ],

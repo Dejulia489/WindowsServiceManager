@@ -1,0 +1,17 @@
+# Azure Pipeline for azure devops extensions
+
+# Get templates from azure pipelines common templates
+resources:
+  repositories:
+    - repository: templates
+      type: git
+      name: 'Azure Pipelines Templates/azure-devops-extension'
+      ref: 'refs/heads/master'
+
+# Extension version
+name: 2.1.$(rev:r)
+
+# Extend Azure DevOps template
+extends:
+  template: npm/pipeline.yml@templates
+  extensionVisibility: public
