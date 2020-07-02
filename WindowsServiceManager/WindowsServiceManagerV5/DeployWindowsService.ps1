@@ -136,7 +136,6 @@ $scriptBlock = {
     $RecreateService = $args[15]
     $InstallService = $args[16]
     
-
     # Handle TopShelf service instance name
     if ($InstanceName.Length -ne 0)
     {
@@ -179,7 +178,7 @@ $scriptBlock = {
         if ($InstallTopShelfService)
         {
             # Binaires needed to complete install for TopShelf
-            Copy-WSMServiceBinaries -ArtifactPath $ArtifactPath -ParentPath $parentPath
+            Copy-WSMServiceBinaries -ArtifactPath $ArtifactPath -ParentPath $parentPath -ErrorAction Stop
             $arguments = @(
                 'install'
                 '-servicename:{0}' -f $ServiceName.split('$')[0]
@@ -267,7 +266,7 @@ $scriptBlock = {
         {
             New-WSMServiceDirectory -ParentPath $parentPath
         }
-        Copy-WSMServiceBinaries -ArtifactPath $ArtifactPath -ParentPath $parentPath
+        Copy-WSMServiceBinaries -ArtifactPath $ArtifactPath -ParentPath $parentPath -ErrorAction Stop
         
         if ($startService)
         {

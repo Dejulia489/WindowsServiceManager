@@ -243,6 +243,7 @@ function Get-WSMFullExecuteablePath
 
 function New-WSMServiceDirectory
 {
+    [CmdletBinding()]
     param (
         [string]
         $ParentPath
@@ -256,6 +257,7 @@ function New-WSMServiceDirectory
 
 function Copy-WSMServiceBinaries
 {
+    [CmdletBinding()]
     param (
         [string]
         $ArtifactPath,
@@ -264,15 +266,19 @@ function Copy-WSMServiceBinaries
         $ParentPath
     )
     Write-Host "[$env:ComputerName]: Copying [$ArtifactPath] to [$ParentPath]"
-    if($ArtifactPath.EndsWith('.zip'))
+    if ($ArtifactPath.EndsWith('.zip'))
     {
-        Expand-
+        Expand-Archive -Path $ArtifactPath -DestinationPath $ParentPath -Force -ErrorAction Stop
     }
-    # Add handling for zip packages
-    Copy-Item -Path "$ArtifactPath\*" -Destination $ParentPath -Force -Recurse -ErrorAction Stop 
+    else
+    {
+        Copy-Item -Path "$ArtifactPath\*" -Destination $ParentPath -Force -Recurse -ErrorAction Stop 
+    }
 }
 
-function Invoke-WSMCleanInstall {
+function Invoke-WSMCleanInstall
+{
+    [CmdletBinding()]
     param (
         [string]
         $ParentPath, 
