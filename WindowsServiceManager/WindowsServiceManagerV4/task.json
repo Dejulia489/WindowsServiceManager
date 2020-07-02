@@ -13,8 +13,8 @@
     "preview": false,
     "version": {
         "Major": 4,
-        "Minor": 3,
-        "Patch": 5
+        "Minor": 5,
+        "Patch": 0
     },
     "instanceNameFormat": "Deploy Windows Service",
     "groups": [
