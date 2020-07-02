@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run package-extension -- --rev-version",
-    "build:dev": "npm run package-extension:dev -- --rev-version",
+    "build": "npm run package-extension",
+    "build:dev": "npm run package-extension:dev",
     "package-extension": "tfx extension create --manifest-globs vss-extension.json --overrides-file configs/release.json",
     "package-extension:dev": "tfx extension create --manifest-globs vss-extension.json --overrides-file configs/dev.json",
     "publish-extension": "tfx extension publish --manifest-globs vss-extension.json"
