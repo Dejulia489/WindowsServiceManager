@@ -15,4 +15,5 @@ name: 2.1.$(rev:r)
 extends:
   template: npm/pipeline.yml@templates
   parameters:
-    extensionVisibility: public
+    extensionVisibilityDev: private
+    extensionVisibilityPrd: public
