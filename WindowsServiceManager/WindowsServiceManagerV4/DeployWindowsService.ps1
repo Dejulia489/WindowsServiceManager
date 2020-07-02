@@ -41,7 +41,7 @@ If ($DeploymentType -eq 'Agent')
     $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
     $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminLogin, $securePassword
     $input_NewPsSessionOptionArguments = (Get-VstsInput -Name "NewPsSessionOptionArguments")
-    $sessionOption = Get-NewPSSessionOption -arguments $input_NewPsSessionOptionArguments
+    $sessionOption = Get-WSMNewPSSessionOption -arguments $input_NewPsSessionOptionArguments
     $useSSL = (Get-VstsInput -Name 'UseSSL' -AsBool)
 }
 If($InstallService)
@@ -83,7 +83,7 @@ $scriptBlock = {
         Write-Output "[$env:ComputerName]: Instance Name: [$instanceName]"
         $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $instanceName
     }
-    Function Get-WindowsService
+    Function Get-WSMWindowsService
     {
         param
         (
@@ -91,14 +91,14 @@ $scriptBlock = {
         )
         Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
     }
-    Function Start-WindowsService
+    Function Start-WSMWindowsService
     {
         param
         (
             $ServiceName
         )
         Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
-        $serviceObject = Get-WindowsService -ServiceName $ServiceName
+        $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
         $respone = $serviceObject.StartService()
         If ($respone.ReturnValue -ne 0)
         {
@@ -110,7 +110,7 @@ $scriptBlock = {
         }
     }
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
-    $serviceObject = Get-WindowsService -ServiceName $ServiceName
+    $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     # If the service does not exist and the installtion path can only be provided if the Install Service flag is passed.
     If($null -eq $serviceObject -and $null -ne $installationPath)
     {
@@ -158,14 +158,14 @@ $scriptBlock = {
             $newService = New-Service @newServiceSplat
         }
     }
-    $serviceObject = Get-WindowsService -ServiceName $ServiceName
+    $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     If($freshTopShelfInstall)
     {
         # Topshelf installation completed the file copy so skip the clean install process
         
         If ($startService)
         {
-            Start-WindowsService -ServiceName $ServiceName
+            Start-WSMWindowsService -ServiceName $ServiceName
         }
     }
     ElseIf ($serviceObject)
@@ -176,7 +176,7 @@ $scriptBlock = {
             Write-Output "[$env:ComputerName]: Stopping [$ServiceName]"
             Do
             {
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
+                $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
                 $results = $serviceObject.StopService()
                 If ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout)
                 {
@@ -196,7 +196,7 @@ $scriptBlock = {
                         return Write-Error -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds."             
                     }
                 }
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
+                $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
             }
             While ($serviceObject.State -ne 'Stopped')
         }
@@ -261,7 +261,7 @@ $scriptBlock = {
         
         If($startService)
         {
-            Start-WindowsService -ServiceName $ServiceName
+            Start-WSMWindowsService -ServiceName $ServiceName
         }
 
     }

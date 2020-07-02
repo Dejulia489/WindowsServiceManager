@@ -55,7 +55,7 @@ $scriptBlock = {
     $ArtifactPath     = $args[4]
     $installationPath = $args[5]
     $runAsCredential  = $args[6]
-    Function Get-WindowsService
+    Function Get-WSMWindowsService
     {
         param
         (
@@ -64,7 +64,7 @@ $scriptBlock = {
         Get-WmiObject -Class Win32_Service | Where-Object {$PSItem.Name -eq $ServiceName}
     }
     Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
-    $serviceObject = Get-WindowsService -ServiceName $ServiceName
+    $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     # If the service does not exist and the installtion path can only be provided if the Install Service flag is passed.
     If($null -eq $serviceObject -and $null -ne $installationPath)
     {
@@ -78,7 +78,7 @@ $scriptBlock = {
             $newServiceSplat.Credential = $runAsCredential
         }
         $newService = New-Service @newServiceSplat
-        $serviceObject = Get-WindowsService -ServiceName $ServiceName
+        $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     }
     If ($serviceObject)
     {  
@@ -88,7 +88,7 @@ $scriptBlock = {
             Write-Output "[$env:ComputerName]: Stopping [$ServiceName]"
             Do
             {
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
+                $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
                 $results = $serviceObject.StopService()
                 If ($stopServiceTimer.Elapsed.TotalSeconds -gt $Timeout)
                 {
@@ -108,7 +108,7 @@ $scriptBlock = {
                         Write-Error "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds." -ErrorAction Stop                    
                     }
                 }
-                $serviceObject = Get-WindowsService -ServiceName $ServiceName
+                $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
             }
             While ($serviceObject.State -ne 'Stopped')
         }

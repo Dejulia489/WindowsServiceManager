@@ -1,3 +1,6 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingUserNameAndPassWordParams", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
 param
 (
     [Parameter()]
@@ -29,47 +32,78 @@ param
     $InstallService = (Get-VstsInput -Name 'InstallService' -AsBool),
     
     [Parameter()]
-    $StartService = (Get-VstsInput -Name 'StartService' -AsBool)
+    $StartService = (Get-VstsInput -Name 'StartService' -AsBool),
+
+    [Parameter()]
+    $Machines = (Get-VstsInput -Name 'Machines').Split(',').trim(),
+
+    [Parameter()]
+    $AdminLogin = (Get-VstsInput -Name 'AdminLogin'),
+
+    [Parameter()]
+    $Password = (Get-VstsInput -Name 'Password'),
+
+    [Parameter()]
+    $NewPsSessionOptionArguments = (Get-VstsInput -Name 'NewPsSessionOptionArguments'),
+
+    [Parameter()]
+    $UseSSL = (Get-VstsInput -Name 'UseSSL' -AsBool),
+
+    [Parameter()]
+    $InstallTopShelfService = (Get-VstsInput -Name 'InstallTopShelfService' -AsBool),
+
+    [Parameter()]
+    $InstanceName = (Get-VstsInput -Name 'InstanceName'),
+
+    [Parameter()]
+    $InstallArguments = (Get-VstsInput -Name 'InstallArguments'),
+
+    [Parameter()]
+    $StartCommand = (Get-VstsInput -Name 'InstallationPath'),
+
+    [Parameter()]
+    $ServiceDisplayName = (Get-VstsInput -Name 'ServiceDisplayName'),
+
+    [Parameter()]
+    $ServiceDescription = (Get-VstsInput -Name 'ServiceDescription'),
+
+    [Parameter()]
+    $ServiceStartupType = (Get-VstsInput -Name 'ServiceStartupType'),
+
+    [Parameter()]
+    $RunAsUsername = (Get-VstsInput -Name 'RunAsUsername'),
+
+    [Parameter()]
+    $RunAsPassword = (Get-VstsInput -Name 'RunAsPassword')
+
+
 )
 Trace-VstsEnteringInvocation $MyInvocation
+# Import utility script
+$UTILITY_PATH = Join-Path -Path $PSScriptRoot -ChildPath 'ps_modules\WindowsServiceManagerPS\WindowsServiceManagerPS.ps1'
+. $UTILITY_PATH
 
 if ($DeploymentType -eq 'Agent')
 {
-    $_machines = (Get-VstsInput -Name 'Machines' -Require).Split(',').trim()
-    Write-Host ("Begining deployment to [{0}]" -f ($_machines -join ', '))
-    $adminLogin = (Get-VstsInput -Name 'AdminLogin' -Require )
-    $password = (Get-VstsInput -Name 'Password' -Require )
-    $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
-    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $adminLogin, $securePassword
-    $input_NewPsSessionOptionArguments = (Get-VstsInput -Name "NewPsSessionOptionArguments")
-    $sessionOption = Get-NewPSSessionOption -arguments $input_NewPsSessionOptionArguments
-    $useSSL = (Get-VstsInput -Name 'UseSSL' -AsBool)
+    Write-Host ("Begining deployment to [{0}]" -f ($Machines -join ', '))
+
+    if (($null -ne $Password) -and ($null -ne $AdminLogin))
+    {
+        $securePassword = ConvertTo-SecureString $Password -AsPlainText -Force
+        $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AdminLogin, $securePassword
+    }
+    $sessionOption = Get-WSMNewPSSessionOption -arguments $NewPsSessionOptionArguments
 }
 
-if ($InstallService)
+if ($StartCommand)
 {
-    $installTopShelfService = (Get-VstsInput -Name 'InstallTopShelfService' -AsBool )
-    if ($installTopShelfService)
-    {
-        $instanceName = (Get-VstsInput -Name 'InstanceName' )
-        $installArguments = (Get-VstsInput -Name 'InstallArguments' )
-    }
-    $startCommand = (Get-VstsInput -Name 'InstallationPath' )
+    $installationPath = Get-WSMFullExecuteablePath -StringContainingPath $StartCommand
+}
 
-    $serviceDisplayName = (Get-VstsInput -Name 'ServiceDisplayName')
-    $serviceDescription = (Get-VstsInput -Name 'ServiceDescription')
-    $serviceStartupType = (Get-VstsInput -Name 'ServiceStartupType')
-
-    $installationPath = Get-FullExecuteablePath -StringContainingPath $startCommand
-
-    $runAsUsername = (Get-VstsInput -Name 'RunAsUsername' )
-    $runAsPassword = (Get-VstsInput -Name 'RunAsPassword' )
-
-    if ($runAsPassword)
-    {
-        $secureRunAsPassword = ConvertTo-SecureString $runAsPassword -AsPlainText -Force
-        $runAsCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $runAsUsername, $secureRunAsPassword
-    }
+if ($RunAsPassword)
+{
+    $secureRunAsPassword = ConvertTo-SecureString $RunAsPassword -AsPlainText -Force
+    $runAsCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $RunAsUsername, $secureRunAsPassword
 }
 
 # Set default values of optional parameters.
@@ -78,63 +112,74 @@ if (-not $ServiceDisplayName)
     $ServiceDisplayName = $ServiceName
 }
 
-# fix ServiceName (can not contain Spaces)
-if ($ServiceName.Contains(' '))
+if (-not $ServiceDescription)
 {
-    $ServiceName = $ServiceName.Replace(' ', '')
+    $ServiceDescription = $ServiceName
 }
 
 $scriptBlock = {
     $serviceName = $args[0]
-    $serviceDisplayName = $args[1]
-    $serviceDescription = $args[2]
-    $serviceStartupType = $args[3]
+    $ServiceDisplayName = $args[1]
+    $ServiceDescription = $args[2]
+    $ServiceStartupType = $args[3]
     $Timeout = $args[4]
     $StopProcess = $args[5]
     $CleanInstall = $args[6]
     $ArtifactPath = $args[7]
-    $installationPath = $args[8]
-    $startCommand = $args[9]
+    $InstallationPath = $args[8]
+    $StartCommand = $args[9]
     $runAsCredential = $args[10]
-    $installTopShelfService = $args[11]
-    $instanceName = $args[12]
-    $installArguments = $args[13]
+    $InstallTopShelfService = $args[11]
+    $InstanceName = $args[12]
+    $InstallArguments = $args[13]
     $startService = $args[14]
     $RecreateService = $args[15]
+    $InstallService = $args[16]
     
-    if ($instanceName.Length -ne 0)
+
+    # Handle TopShelf service instance name
+    if ($InstanceName.Length -ne 0)
     {
-        Write-Host "[$env:ComputerName]: Instance Name: [$instanceName]"
-        $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $instanceName
+        Write-Host "[$env:ComputerName]: Instance Name: [$InstanceName]"
+        $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $InstanceName
     }
     
     Write-Host "[$env:ComputerName]: Attempting to locate [$ServiceName]"
-    $serviceObject = Get-WindowsService -ServiceName $ServiceName
-    # If the service does not exist or cleanInstall is enabled and the installtion path can only be provided if the Install Service flag is passed.
-    if (($null -eq $serviceObject -or $RecreateService) -and $null -ne $installationPath)
+    $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
+    if ($serviceObject)
     {
-        if ($serviceObject)
+        if($RecreateService)
         {
-            Write-Host "[$env:ComputerName]: Recreate service set to [$RecreateService], removing the Service [$ServiceName]"
-            $serviceObject = Stop-WindowsService -ServiceName $ServiceName
-            $serviceObject.Delete()
-            Write-Host "[$env:ComputerName]: Removed Service [$ServiceName]"  
-        }
-        else
-        {
-            Write-Host "[$env:ComputerName]: Unable to locate [$ServiceName] creating a new service"
-        }
-        if ($installTopShelfService)
-        {
-            $parentPath = Get-FullExecuteablePath -StringContainingPath $installationPath -JustParentPath
-            if (-not(Test-Path $parentPath))
+            Write-Host "[$env:ComputerName]: Recreate service set to [$RecreateService]"
+            Write-Host "[$env:ComputerName]: Stopping the service [$ServiceName]"
+            $serviceObject = Stop-WSMWindowsService -ServiceName $ServiceName
+            Write-Host "[$env:ComputerName]: Deleting the service [$ServiceName]"
+            $deleteResults = $serviceObject.Delete()
+            if($deleteResults.ReturnValue -eq 0)
             {
-                $null = New-Item -Path $parentPath -ItemType 'Directory' -Force
+                Write-Host "[$env:ComputerName]: Successfully removed [$ServiceName]"  
             }
+            else 
+            {
+                return Write-Error "[$env:ComputerName]: Unable to remove [$ServiceName] returned value was [$($deleteResults.ReturnValue)]. See https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/delete-method-in-class-win32-service for more information on return values" 
+            }
+        }
+    }
+    else
+    {
+        Write-Host "[$env:ComputerName]: Unable to locate [$ServiceName]."
+    }
 
-            Write-Host "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
-            Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
-
+    # Install service
+    if((-not $serviceObject) -and $InstallService)
+    {
+        $parentPath = Get-WSMFullExecuteablePath -StringContainingPath $InstallationPath -JustParentPath
+        New-WSMServiceDirectory -ParentPath $parentPath
+        Write-Host "[$env:ComputerName]: Creating service [$ServiceName]."
+        if ($InstallTopShelfService)
+        {
+            # Binaires needed to complete install for TopShelf
+            Copy-WSMServiceBinaries -ArtifactPath $ArtifactPath -ParentPath $parentPath
             $arguments = @(
                 'install'
                 '-servicename:{0}' -f $ServiceName.split('$')[0]
@@ -144,13 +189,13 @@ $scriptBlock = {
                 $arguments += '-username:{0}' -f $runAsCredential.UserName
                 $arguments += '-password:{0}' -f $runAsCredential.GetNetworkCredential().Password
             }
-            if ($instanceName)
+            if ($InstanceName)
             {
-                $arguments += '-instance:{0}' -f $instanceName
+                $arguments += '-instance:{0}' -f $InstanceName
             }
-            if ($installArguments)
+            if ($InstallArguments)
             {
-                $arguments += $installArguments
+                $arguments += $InstallArguments
             }
 
             Write-Host "[$env:ComputerName]: Installing topshelf with arguments $arguments"
@@ -159,126 +204,74 @@ $scriptBlock = {
         }
         else
         {
-            Write-Host "[$env:ComputerName]: Start creating Service [$ServiceName]."
-            if ($serviceStartupType -eq "Delayed")
+            if ($ServiceStartupType -eq "Delayed")
             {
                 $startupType = "Automatic"
                 $delayed = $true
             }
             else
             {
-                $startupType = $serviceStartupType
+                $startupType = $ServiceStartupType
                 $delayed = $false
             }
-
             $newServiceSplat = @{
                 Name           = $ServiceName
-                BinaryPathName = $startCommand
-                DisplayName    = $serviceDisplayName
+                BinaryPathName = $StartCommand
+                DisplayName    = $ServiceDisplayName
                 StartupType    = $startupType
+                Description    = $ServiceDescription
             }
-
-            # add Description just if Descripion is provided to prevent Parameter null or empty Exception
-            if ($serviceDescription)
-            {                
-                Write-Host "[$env:ComputerName]: Adding Description [$serviceDescription]"
-                $newServiceSplat.Description = $serviceDescription
-            }
-
             if ($runAsCredential)
             {
                 Write-Host "[$env:ComputerName]: Setting RunAsCredentials"
                 $newServiceSplat.Credential = $runAsCredential
+                Write-Host "[$env:ComputerName]: Granting [$($runAsCredential.UserName)] logon as a service rights"
                 Add-LocalUserToLogonAsAService -user $runAsCredential.UserName
             }
-            $newService = New-Service @newServiceSplat            
+            $null = New-Service @newServiceSplat            
             Write-Host "[$env:ComputerName]: Service [$ServiceName] created."
 
             if ($delayed)
             {
-                Write-Host "[$env:ComputerName]: Set [$ServiceName] to Delayed start"
+                Write-Host "[$env:ComputerName]: Set [$ServiceName] to delayed start"
                 Start-Process -FilePath sc.exe -ArgumentList "config ""$ServiceName"" start=delayed-auto"
             }
         }
-    }
+    }     
 
-    $serviceObject = Get-WindowsService -ServiceName $ServiceName
-    
+    $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     if ($freshTopShelfInstall)
     {
         # Topshelf installation completed the file copy so skip the clean install process
-        
         if ($startService)
         {
-            Start-WindowsService -ServiceName $ServiceName
+            Start-WSMWindowsService -ServiceName $ServiceName
         }
     }
     elseif ($serviceObject)
     {  
-        $serviceObject = Stop-WindowsService -ServiceName $ServiceName -Timeout $Timeout -StopProcess:$StopProcess
-        $parentPath = Get-FullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
+        $serviceObject = Stop-WSMWindowsService -ServiceName $ServiceName -Timeout $Timeout -StopProcess:$StopProcess
+        $parentPath = Get-WSMFullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
         Write-Host "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
 
         if (Test-Path $parentPath)
         {
+            
             if ($CleanInstall)
             {
                 Write-Host "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
-                $cleanInstalltimer = [Diagnostics.Stopwatch]::StartNew()
-                do
-                {
-                    try
-                    {
-                        Get-ChildItem -Path $parentPath -Recurse -Force | Remove-Item -Recurse -Force -ErrorAction Stop
-                    }
-                    catch
-                    {
-                        switch -Wildcard ($PSItem.ErrorDetails.Message)
-                        {
-                            '*Cannot remove*'
-                            {
-                                if ($StopProcess)
-                                {
-                                    Write-Verbose "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, stopping process." 
-                                    $allProcesses = Get-Process
-                                    $process = $allProcesses | Where-Object { $_.Path -like "$parentPath\*" } 
-                                    if ($process)
-                                    {
-                                        Write-Warning -Message "[$env:ComputerName]: Files are still in use by [$($process.ProcessName)], stopping the process!"
-                                        $process | Stop-Process -Force -ErrorAction SilentlyContinue
-                                    }
-                                }
-                                else
-                                {
-                                    return Write-Error -Message $PSItem
-                                }    
-                            }
-                            default
-                            {
-                                return Write-Error -Message $PSItem
-                            }
-                        }
-                    }
-                    if ($cleanInstalltimer.Elapsed.TotalSeconds -gt $Timeout)
-                    {
-                        return Write-Error -Message "[$env:ComputerName]: [$ServiceName] did not respond within [$Timeout] seconds, clean install has failed."
-                    }
-                }
-                while (Get-ChildItem -Path $parentPath -Recurse -Force)
-                $null = New-Item -ItemType Directory -Path $parentPath -Force
+                Invoke-WSMCleanInstall -ParentPath $parentPath -StopProcess $StopProcess -Timeout $TimeOut -ServiceName $ServiceName
             }
         }
         else
         {
-            $null = New-Item -ItemType Directory -Path $parentPath -Force
+            New-WSMServiceDirectory -ParentPath $parentPath
         }
-
-        Write-Host "[$env:ComputerName]: Copying [$ArtifactPath] to [$parentPath]"
-        Copy-Item -Path "$ArtifactPath\*" -Destination $parentPath -Force -Recurse -ErrorAction Stop
+        Copy-WSMServiceBinaries -ArtifactPath $ArtifactPath -ParentPath $parentPath
         
         if ($startService)
         {
-            Start-WindowsService -ServiceName $ServiceName
+            Start-WSMWindowsService -ServiceName $ServiceName
         }
     }
     else
@@ -287,38 +280,45 @@ $scriptBlock = {
     }
 }
 
+
+if ($Machines)
+{
+    $newPSSessionSPlat = @{
+        ComputerName = $Machines 
+        SessionOption = $sessionOption 
+        UseSSL = $UseSSL
+    }
+    if ($credential)
+    {
+        $newPSSessionSPlat.Credential = $credential
+    }
+    $sessions = New-PSSession @newPSSessionSPlat
+}
+
 $invokeCommandSplat = @{
-    ScriptBlock = $scriptBlock
+    Session = $sessions
     ArgumentList = $ServiceName, 
-        $serviceDisplayName, 
-        $serviceDescription, 
-        $serviceStartupType, 
+        $ServiceDisplayName, 
+        $ServiceDescription, 
+        $ServiceStartupType, 
         $TimeOut, 
         $StopProcess, 
         $CleanInstall,
         $ArtifactPath,
         $installationPath,
-        $startCommand,
+        $StartCommand,
         $runAsCredential,
-        $installTopShelfService,
-        $instanceName,
-        $installArguments,
+        $InstallTopShelfService,
+        $InstanceName,
+        $InstallArguments,
         $startService,
-        $RecreateService
-}
-if ($credential)
-{
-    $invokeCommandSplat.Credential = $credential
-    $invokeCommandSplat.ComputerName = $_machines
-}
-if ($sessionOption)
-{
-    $invokeCommandSplat.sessionOption = $sessionOption
-}
-if ($useSSL)
-{
-    $invokeCommandSplat.UseSSL = $true
+        $RecreateService,
+        $InstallService
 }
 
-Invoke-Command @invokeCommandSplat 
+# Import utility script into session
+Invoke-Command @invokeCommandSplat -FilePath $UTILITY_PATH
+
+# Invoke script block
+Invoke-Command @invokeCommandSplat -ScriptBlock $scriptBlock
 Trace-VstsLeavingInvocation $MyInvocation

@@ -1,4 +1,4 @@
-function Get-NewPSSessionOption {
+function Get-WSMNewPSSessionOption {
     [CmdletBinding()]
     param(
         [string] $arguments
