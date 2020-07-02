@@ -9,7 +9,7 @@ resources:
       ref: 'refs/heads/master'
 
 # Extension version
-name: 2.1.$(rev:r)
+name: 5.0.$(rev:r)
 
 # Extend Azure DevOps template
 extends:
