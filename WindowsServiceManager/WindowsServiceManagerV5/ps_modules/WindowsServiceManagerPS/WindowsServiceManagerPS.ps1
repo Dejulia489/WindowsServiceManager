@@ -25,18 +25,18 @@ function Add-LocalUserToLogonAsAService
             $sidstr = $null
         }
 
-        Write-Host "Account: $($user)" -ForegroundColor DarkCyan
+        Write-Output "Account: $($user)" -ForegroundColor DarkCyan
 
         if ( [string]::IsNullOrEmpty($sidstr) )
         {
             return Write-Error "Account not found!"
         }
 
-        Write-Host "Account SID: $($sidstr)" -ForegroundColor DarkCyan
+        Write-Output "Account SID: $($sidstr)" -ForegroundColor DarkCyan
 
         $tmp = [System.IO.Path]::GetTempFileName()
 
-        Write-Host "Export current Local Security Policy" -ForegroundColor DarkCyan
+        Write-Output "Export current Local Security Policy" -ForegroundColor DarkCyan
         secedit.exe /export /cfg "$($tmp)" 
 
         $c = Get-Content -Path $tmp 
@@ -54,7 +54,7 @@ function Add-LocalUserToLogonAsAService
 
         if ( $currentSetting -notlike "*$($sidstr)*" )
         {
-            Write-Host "Modify Setting ""Logon as a Service""" -ForegroundColor DarkCyan
+            Write-Output "Modify Setting ""Logon as a Service""" -ForegroundColor DarkCyan
 			
             if ( [string]::IsNullOrEmpty($currentSetting) )
             {
@@ -65,7 +65,7 @@ function Add-LocalUserToLogonAsAService
                 $currentSetting = "*$($sidstr),$($currentSetting)"
             }
 			
-            Write-Host "$currentSetting"
+            Write-Output "$currentSetting"
 			
             $outfile = @"
 [Unicode]
@@ -80,7 +80,7 @@ SeServiceLogonRight = $($currentSetting)
             $tmp2 = [System.IO.Path]::GetTempFileName()
 			
 			
-            Write-Host "Import new settings to Local Security Policy" -ForegroundColor DarkCyan
+            Write-Output "Import new settings to Local Security Policy" -ForegroundColor DarkCyan
             $outfile | Set-Content -Path $tmp2 -Encoding Unicode -Force
 
             #notepad.exe $tmp2
@@ -89,7 +89,7 @@ SeServiceLogonRight = $($currentSetting)
             try
             {
                 secedit.exe /configure /db "secedit.sdb" /cfg "$($tmp2)" /areas USER_RIGHTS 
-                #write-host "secedit.exe /configure /db ""secedit.sdb"" /cfg ""$($tmp2)"" /areas USER_RIGHTS "
+                #Write-Output "secedit.exe /configure /db ""secedit.sdb"" /cfg ""$($tmp2)"" /areas USER_RIGHTS "
             }
             finally
             {	
@@ -98,10 +98,10 @@ SeServiceLogonRight = $($currentSetting)
         }
         else
         {
-            Write-Host "NO ACTIONS REQUIRED! Account already in ""Logon as a Service""" -ForegroundColor DarkCyan
+            Write-Output "NO ACTIONS REQUIRED! Account already in ""Logon as a Service""" -ForegroundColor DarkCyan
         }
 
-        Write-Host "Done." -ForegroundColor DarkCyan
+        Write-Output "Done." -ForegroundColor DarkCyan
     }
 }
 
@@ -140,7 +140,7 @@ function Start-WSMWindowsService
     (
         $ServiceName
     )
-    Write-Host "[$env:ComputerName]: Starting [$ServiceName]"
+    Write-Output "[$env:ComputerName]: Starting [$ServiceName]"
     $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     $respone = $serviceObject.StartService()
     if ($respone.ReturnValue -ne 0)
@@ -149,7 +149,7 @@ function Start-WSMWindowsService
     }
     else
     {
-        Write-Host "[$env:ComputerName]: [$ServiceName] started successfully!"
+        Write-Output "[$env:ComputerName]: [$ServiceName] started successfully!"
     }
 }
 
@@ -173,7 +173,7 @@ function Stop-WSMWindowsService
     if ($serviceObject.State -eq 'Running')
     {
         $stopServiceTimer = [Diagnostics.Stopwatch]::StartNew()
-        Write-Host "[$env:ComputerName]: Stopping Service [$ServiceName]"
+        Write-Output "[$env:ComputerName]: Stopping Service [$ServiceName]"
         do
         {
             $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
@@ -204,7 +204,7 @@ function Stop-WSMWindowsService
         }
         while ($serviceObject.State -ne 'Stopped')
 
-        Write-Host "[$env:ComputerName]: Stopped Service [$ServiceName]"
+        Write-Output "[$env:ComputerName]: Stopped Service [$ServiceName]"
     }
     return $serviceObject    
 }
@@ -250,7 +250,7 @@ function New-WSMServiceDirectory
     )
     if (-not(Test-Path $ParentPath))
     {
-        Write-Host "[$env:ComputerName]: Creating the service directory at [$ParentPath]."
+        Write-Output "[$env:ComputerName]: Creating the service directory at [$ParentPath]."
         $null = New-Item -Path $ParentPath -ItemType 'Directory' -Force
     }  
 }
@@ -265,7 +265,7 @@ function Copy-WSMServiceBinaries
         [string]
         $ParentPath
     )
-    Write-Host "[$env:ComputerName]: Copying [$ArtifactPath] to [$ParentPath]"
+    Write-Output "[$env:ComputerName]: Copying [$ArtifactPath] to [$ParentPath]"
     if ($ArtifactPath.EndsWith('.zip'))
     {
         Expand-Archive -Path $ArtifactPath -DestinationPath $ParentPath -Force -ErrorAction Stop
