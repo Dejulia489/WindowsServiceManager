@@ -154,10 +154,19 @@ $scriptBlock = {
             $serviceObject = Stop-WSMWindowsService -ServiceName $ServiceName
             Write-Output "[$env:ComputerName]: Deleting the service [$ServiceName]"
             
+            try {
                 $deleteResults = $serviceObject.Delete()
+            }
+            catch {
+                Write-Error "[$env:ComputerName]: Failing remove Service [$ServiceName]. Used ServiceObject [$serviceObject]" 
+                Write-Error $_.Exception.Message
+                return
+            }
+
             if($deleteResults.ReturnValue -eq 0)
             {
                 Write-Output "[$env:ComputerName]: Successfully removed [$ServiceName]"  
+                $serviceObject = $null
             }
             else 
             {
