@@ -290,22 +290,7 @@ $scriptBlock = {
 }
 
 
-if ($Machines)
-{
-    $newPSSessionSPlat = @{
-        ComputerName = $Machines 
-        SessionOption = $sessionOption 
-        UseSSL = $UseSSL
-    }
-    if ($credential)
-    {
-        $newPSSessionSPlat.Credential = $credential
-    }
-    $sessions = New-PSSession @newPSSessionSPlat
-}
-
 $invokeCommandSplat = @{
-    Session = $sessions
     ArgumentList = $ServiceName, 
         $ServiceDisplayName, 
         $ServiceDescription, 
@@ -325,8 +310,23 @@ $invokeCommandSplat = @{
         $InstallService
 }
 
+if ($Machines)
+{
+    $newPSSessionSPlat = @{
+        ComputerName = $Machines 
+        SessionOption = $sessionOption 
+        UseSSL = $UseSSL
+    }
+    if ($credential)
+    {
+        $newPSSessionSPlat.Credential = $credential
+    }
+    $sessions = New-PSSession @newPSSessionSPlat    
+    $invokeCommandSplat.Session = $sessions
+
     # Import utility script into session
     Invoke-Command @invokeCommandSplat -FilePath $UTILITY_PATH
+}
 
 # Invoke script block
 Invoke-Command @invokeCommandSplat -ScriptBlock $scriptBlock
