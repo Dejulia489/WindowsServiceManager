@@ -153,10 +153,20 @@ $scriptBlock = {
             Write-Host "[$env:ComputerName]: Stopping the service [$ServiceName]"
             $serviceObject = Stop-WSMWindowsService -ServiceName $ServiceName
             Write-Host "[$env:ComputerName]: Deleting the service [$ServiceName]"
-            $deleteResults = $serviceObject.Delete()
+            
+            try {
+                $deleteResults = $serviceObject.Delete()
+            }
+            catch {
+                Write-Error "[$env:ComputerName]: Failing remove Service [$ServiceName]. Used ServiceObject [$serviceObject]" 
+                Write-Error $_.Exception.Message
+                return
+            }
+
             if($deleteResults.ReturnValue -eq 0)
             {
                 Write-Host "[$env:ComputerName]: Successfully removed [$ServiceName]"  
+                $serviceObject = $null
             }
             else 
             {
@@ -280,22 +290,7 @@ $scriptBlock = {
 }
 
 
-if ($Machines)
-{
-    $newPSSessionSPlat = @{
-        ComputerName = $Machines 
-        SessionOption = $sessionOption 
-        UseSSL = $UseSSL
-    }
-    if ($credential)
-    {
-        $newPSSessionSPlat.Credential = $credential
-    }
-    $sessions = New-PSSession @newPSSessionSPlat
-}
-
 $invokeCommandSplat = @{
-    Session = $sessions
     ArgumentList = $ServiceName, 
         $ServiceDisplayName, 
         $ServiceDescription, 
@@ -315,8 +310,23 @@ $invokeCommandSplat = @{
         $InstallService
 }
 
-# Import utility script into session
-Invoke-Command @invokeCommandSplat -FilePath $UTILITY_PATH
+if ($Machines)
+{
+    $newPSSessionSPlat = @{
+        ComputerName = $Machines 
+        SessionOption = $sessionOption 
+        UseSSL = $UseSSL
+    }
+    if ($credential)
+    {
+        $newPSSessionSPlat.Credential = $credential
+    }
+    $sessions = New-PSSession @newPSSessionSPlat    
+    $invokeCommandSplat.Session = $sessions
+
+    # Import utility script into session
+    Invoke-Command @invokeCommandSplat -FilePath $UTILITY_PATH
+}
 
 # Invoke script block
 Invoke-Command @invokeCommandSplat -ScriptBlock $scriptBlock

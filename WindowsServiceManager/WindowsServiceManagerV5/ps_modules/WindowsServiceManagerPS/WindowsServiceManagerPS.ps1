@@ -89,7 +89,7 @@ SeServiceLogonRight = $($currentSetting)
             try
             {
                 secedit.exe /configure /db "secedit.sdb" /cfg "$($tmp2)" /areas USER_RIGHTS 
-                #write-host "secedit.exe /configure /db ""secedit.sdb"" /cfg ""$($tmp2)"" /areas USER_RIGHTS "
+                #Write-Host "secedit.exe /configure /db ""secedit.sdb"" /cfg ""$($tmp2)"" /areas USER_RIGHTS "
             }
             finally
             {	
@@ -220,13 +220,16 @@ function Get-WSMFullExecuteablePath
         [switch]
         $JustParentPath = $false
     )
+    Write-Verbose "StartCommand=[$StartCommand]"
+    Write-Verbose "StringContainingPath=[$StringContainingPath]"
     # pattern to analyse Service Startup Command 
     $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/\(\)\[\]{}öäüÖÄÜ°^!§$%&=`´,;@#+._-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/\(\)\[\]{}öäüÖÄÜ°^!§$%&=`´,;@#+._ -]+)(.exe|.dll)))(" |"$))'
 
     # check if PathName can be processed
-    if ($StringContainingPath -notmatch $matchPattern)
+    #if ($StringContainingPath -notmatch $matchPattern)
+    if ($StartCommand -notmatch $matchPattern) #as workaround it will not be Used the parameter. The function Parameter always trims the Quotes.
     {
-        return Write-Warning -Message "String can't be parsed. The StringContainingPath parameter should contain a valid Path ending with an '.exe' or '.dll'. Current string [$StringContainingPath]"
+        return Write-Warning -Message "String can't be parsed. The StringContainingPath parameter should contain a valid Path without spaces or wrapped in quotes and ending with an '.exe' or '.dll'. Current string [$StringContainingPath]"
     }
 
     # extract Path

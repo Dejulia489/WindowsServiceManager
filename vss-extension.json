@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "WindowsServiceManager",
-    "version": "5.0.3",
+    "version": "5.0.7",
     "name": "Windows Service Manager",
     "description": "Installs and deploys a windows service or TopShelf service on a target machine or a deployment group target.",
     "publisher": "MDSolutions",
