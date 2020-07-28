@@ -220,11 +220,14 @@ function Get-WSMFullExecuteablePath
         [switch]
         $JustParentPath = $false
     )
+    Write-Verbose "StartCommand=[$StartCommand]"
+    Write-Verbose "StringContainingPath=[$StringContainingPath]"
     # pattern to analyse Service Startup Command 
     $matchPattern = '( |^)(?<path>([a-zA-Z]):\\([\\\w\/\(\)\[\]{}öäüÖÄÜ°^!§$%&=`´,;@#+._-]+)(.exe|.dll))|(( "|^")(?<path2>(([a-zA-Z]):\\([\\\w\/\(\)\[\]{}öäüÖÄÜ°^!§$%&=`´,;@#+._ -]+)(.exe|.dll)))(" |"$))'
 
     # check if PathName can be processed
-    if ($StringContainingPath -notmatch $matchPattern)
+    #if ($StringContainingPath -notmatch $matchPattern)
+    if ($StartCommand -notmatch $matchPattern) #as workaround it will not be Used the parameter. The function Parameter always trims the Quotes.
     {
         return Write-Warning -Message "String can't be parsed. The StringContainingPath parameter should contain a valid Path without spaces or wrapped in quotes and ending with an '.exe' or '.dll'. Current string [$StringContainingPath]"
     }
