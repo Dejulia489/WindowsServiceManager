@@ -85,7 +85,7 @@ $UTILITY_PATH = Join-Path -Path $PSScriptRoot -ChildPath 'ps_modules\WindowsServ
 
 if ($DeploymentType -eq 'Agent')
 {
-    Write-Output ("Begining deployment to [{0}]" -f ($Machines -join ', '))
+    Write-Host ("Begining deployment to [{0}]" -f ($Machines -join ', '))
 
     if (($null -ne $Password) -and ($null -ne $AdminLogin))
     {
@@ -139,20 +139,20 @@ $scriptBlock = {
     # Handle TopShelf service instance name
     if ($InstanceName.Length -ne 0)
     {
-        Write-Output "[$env:ComputerName]: Instance Name: [$InstanceName]"
+        Write-Host "[$env:ComputerName]: Instance Name: [$InstanceName]"
         $serviceName = "{0}`${1}" -f $ServiceName.split('$')[0], $InstanceName
     }
     
-    Write-Output "[$env:ComputerName]: Attempting to locate [$ServiceName]"
+    Write-Host "[$env:ComputerName]: Attempting to locate [$ServiceName]"
     $serviceObject = Get-WSMWindowsService -ServiceName $ServiceName
     if ($serviceObject)
     {
         if($RecreateService)
         {
-            Write-Output "[$env:ComputerName]: Recreate service set to [$RecreateService]"
-            Write-Output "[$env:ComputerName]: Stopping the service [$ServiceName]"
+            Write-Host "[$env:ComputerName]: Recreate service set to [$RecreateService]"
+            Write-Host "[$env:ComputerName]: Stopping the service [$ServiceName]"
             $serviceObject = Stop-WSMWindowsService -ServiceName $ServiceName
-            Write-Output "[$env:ComputerName]: Deleting the service [$ServiceName]"
+            Write-Host "[$env:ComputerName]: Deleting the service [$ServiceName]"
             
             try {
                 $deleteResults = $serviceObject.Delete()
@@ -165,7 +165,7 @@ $scriptBlock = {
 
             if($deleteResults.ReturnValue -eq 0)
             {
-                Write-Output "[$env:ComputerName]: Successfully removed [$ServiceName]"  
+                Write-Host "[$env:ComputerName]: Successfully removed [$ServiceName]"  
                 $serviceObject = $null
             }
             else 
@@ -176,7 +176,7 @@ $scriptBlock = {
     }
     else
     {
-        Write-Output "[$env:ComputerName]: Unable to locate [$ServiceName]."
+        Write-Host "[$env:ComputerName]: Unable to locate [$ServiceName]."
     }
 
     # Install service
@@ -184,7 +184,7 @@ $scriptBlock = {
     {
         $parentPath = Get-WSMFullExecuteablePath -StringContainingPath $InstallationPath -JustParentPath
         New-WSMServiceDirectory -ParentPath $parentPath
-        Write-Output "[$env:ComputerName]: Creating service [$ServiceName]."
+        Write-Host "[$env:ComputerName]: Creating service [$ServiceName]."
         if ($InstallTopShelfService)
         {
             # Binaires needed to complete install for TopShelf
@@ -207,7 +207,7 @@ $scriptBlock = {
                 $arguments += $InstallArguments
             }
 
-            Write-Output "[$env:ComputerName]: Installing topshelf with arguments $arguments"
+            Write-Host "[$env:ComputerName]: Installing topshelf with arguments $arguments"
             & $installationPath $arguments
             $freshTopShelfInstall = $true
         }
@@ -232,17 +232,17 @@ $scriptBlock = {
             }
             if ($runAsCredential)
             {
-                Write-Output "[$env:ComputerName]: Setting RunAsCredentials"
+                Write-Host "[$env:ComputerName]: Setting RunAsCredentials"
                 $newServiceSplat.Credential = $runAsCredential
-                Write-Output "[$env:ComputerName]: Granting [$($runAsCredential.UserName)] logon as a service rights"
+                Write-Host "[$env:ComputerName]: Granting [$($runAsCredential.UserName)] logon as a service rights"
                 Add-LocalUserToLogonAsAService -user $runAsCredential.UserName
             }
             $null = New-Service @newServiceSplat            
-            Write-Output "[$env:ComputerName]: Service [$ServiceName] created."
+            Write-Host "[$env:ComputerName]: Service [$ServiceName] created."
 
             if ($delayed)
             {
-                Write-Output "[$env:ComputerName]: Set [$ServiceName] to delayed start"
+                Write-Host "[$env:ComputerName]: Set [$ServiceName] to delayed start"
                 Start-Process -FilePath sc.exe -ArgumentList "config ""$ServiceName"" start=delayed-auto"
             }
         }
@@ -261,14 +261,14 @@ $scriptBlock = {
     {  
         $serviceObject = Stop-WSMWindowsService -ServiceName $ServiceName -Timeout $Timeout -StopProcess:$StopProcess
         $parentPath = Get-WSMFullExecuteablePath -StringContainingPath $serviceObject.PathName -JustParentPath
-        Write-Output "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
+        Write-Host "[$env:ComputerName]: Identified [$ServiceName] installation directory [$parentPath]"
 
         if (Test-Path $parentPath)
         {
             
             if ($CleanInstall)
             {
-                Write-Output "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
+                Write-Host "[$env:ComputerName]: Clean install set to [$CleanInstall], removing the contents of [$parentPath]"
                 Invoke-WSMCleanInstall -ParentPath $parentPath -StopProcess $StopProcess -Timeout $TimeOut -ServiceName $ServiceName
             }
         }
