@@ -31,7 +31,7 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 4. **Artifact path** - The path to the Artifact that contains the Windows Service binaries.
 5. **Timeout** - The number of seconds to wait for the service to stop.
 
-### Task Options for Agent 
+### Task Options for Agent
 
 ![Task Options](https://github.com/Dejulia489/WindowsServiceManager/blob/master/Images/TaskOptionsAgent.png?raw=true "Task Options Agent")
 
@@ -64,6 +64,9 @@ After installing the [Windows Service Manager](https://marketplace.visualstudio.
 7. **Install arguments** - The TopShelf installation arguments.
 
 ## Release Notes
+
+### Version 4.5
+Zipped artifacts are automatically expanded to target folder
 
 #### Version 4.4
 
